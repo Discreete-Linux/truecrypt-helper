@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=truecrypt
+Type=Application
+MimeType=application/x-truecrypt-volume;
+Exec=/usr/bin/tc-open
+NoDisplay=true
+Terminal=false
+X-Ubuntu-Gettext-Domain=truecrypt-helper

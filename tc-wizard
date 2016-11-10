@@ -1,0 +1,1172 @@
+#!/usr/bin/python
+# Encoding: UTF-8
+""" Wizard App for creating veracrypt volumes. """
+import os
+import sys
+import errno
+import gettext
+import tempfile
+import getopt
+import re
+import syslog
+import stat
+from time import sleep
+from subprocess import Popen, PIPE
+import parted
+from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
+import truecrypthelper
+import pyudev
+
+gettext.install("truecrypt-helper", unicode=1)
+
+pwNotAllAlpha = True
+pwLen = 20
+
+class TrueCryptWizard(Gtk.Assistant):
+    """ Class for creating VeraCrypt volumes """
+    def __init__(self):
+        """ Display dialog """
+        super(TrueCryptWizard, self).__init__()
+        self.set_title(_("VeraCrypt Volume Wizard"))
+        self.icon_theme = Gtk.IconTheme.get_default()
+        self.icon = self.icon_theme.load_icon("truecrypt-wizard", 24, 0)
+        self.set_icon(self.icon)
+        self.set_size_request(600, 340)
+        self.set_default_size(600, 340)
+        self.set_border_width(10)
+        self.set_position(Gtk.WindowPosition.CENTER)
+        self.extended = True
+        self.useBackup = False
+        self.useDevice = False
+        self.volume = ""
+        self.fsLabel = ""
+        self.mode = ""
+        self.size = Gtk.Adjustment()
+        self.password = ""
+        self.encryptionAlgorithm = "Serpent-AES"
+        self.hashAlgorithm = "SHA-512"
+        self.getGUID()
+        self.setupScreen0()
+        self.setupScreen1()
+        self.setupScreen2()
+        self.setupScreen3()
+        self.connect("destroy", Gtk.main_quit)
+        self.connect("cancel", Gtk.main_quit)
+        self.show_all()
+        self.updateScreens()
+
+    def updateScreens(self):
+        """ Refresh screens. """
+        if self.useDevice:
+            self.contbox.hide()
+            self.devbox.show_all()
+        else:
+            self.devbox.hide()
+            self.contbox.show_all()
+
+        sensitive = (self.size.get_value() != 0 and len(self.volume) > 0)
+        if self.useDevice and len(self.fsLabel) == 0:
+            sensitive = False
+        self.set_page_complete(self.screen1, sensitive)
+
+        if self.useBackup:
+            self.chk0.set_active(True)
+            self.chk0.set_sensitive(False)
+        else:
+            self.chk0.set_sensitive(True)
+
+        if self.useBackup:
+            self.fsLabel = "backup"
+        if self.extended:
+            labelWidth = 16
+        else:
+            labelWidth = 11
+        self.entry2.set_max_length(labelWidth)
+        self.entry2.set_width_chars(labelWidth)
+        self.entry2.set_text(self.fsLabel)
+        if self.useDevice and not self.useBackup:
+            self.entry2.set_sensitive(True)
+        else:
+            self.entry2.set_sensitive(False)
+
+        if self.useDevice:
+            self.spin0.set_sensitive(False)
+        else:
+            self.spin0.set_sensitive(True)
+
+        if self.useDevice:
+            self.checkDevice()
+        else:
+            self.checkContainer()
+
+        if self.password == self.entry1.get_text():
+            self.checkPassword()
+        else:
+            self.set_page_complete(self.screen2, False)
+
+    def setupScreen0(self):
+        """ Setup screen number 0 """
+        title = _("Basic Settings")
+        text0 = _("Create an _extended volume")
+        text1 = _("Create a volume for automatic _backups")
+        text2 = _("Create a container _file")
+        text3 = _("Use an entire _data medium for created volume")
+        format_text = _("Encryption format:")
+        self.screen0 = Gtk.VBox()
+        self.chk0 = Gtk.CheckButton(label=text0)
+        self.chk0.set_use_underline(True)
+        self.chk0.set_active(self.extended)
+        self.chk0.set_sensitive(not self.useBackup)
+        self.screen0.pack_start(self.chk0, False, False, 5)
+        self.chk1 = Gtk.CheckButton(label=text1)
+        self.chk1.set_use_underline(True)
+        self.chk1.set_active(self.useBackup)
+        self.screen0.pack_start(self.chk1, False, False, 5)
+        sep0 = Gtk.HSeparator()
+        self.screen0.pack_start(sep0, False, False, 10)
+        self.rad0 = Gtk.RadioButton(group=None, label=text2)
+        self.rad0.set_use_underline(True)
+        self.screen0.pack_start(self.rad0, False, False, 5)
+        self.rad1 = Gtk.RadioButton(group=self.rad0, label=text3)
+        self.rad1.set_use_underline(True)
+        self.rad1.set_active(self.useDevice)
+        self.screen0.pack_start(self.rad1, False, False, 5)
+        self.chk0.connect("toggled", self.onExtendedVolume)
+        self.chk1.connect("toggled", self.onBackupVolume)
+        self.rad0.connect("clicked", self.onDeviceVolume)
+        self.rad1.connect("clicked", self.onDeviceVolume)
+        sep_format = Gtk.HSeparator()
+        self.screen0.pack_start(sep_format, False, False, 10)
+        self.hbox_format = Gtk.HBox()
+        self.format_title = Gtk.Label(label=format_text)
+        self.format_menu = Gtk.ComboBoxText()
+        if truecrypthelper.vc:
+            self.format_menu.append_text("VeraCrypt")
+        self.format_menu.append_text("TrueCrypt")
+        self.format_menu.append_text("LUKS")
+        self.format_menu.set_active(0)
+        self.mode = self.format_menu.get_active_text()
+        self.format_menu.connect("changed", self.onModeChange)
+        self.hbox_format.pack_start(self.format_title, False, False, 10)
+        self.hbox_format.pack_start(self.format_menu, False, False, 10)
+        self.screen0.pack_start(self.hbox_format, False, False, 10)
+        self.append_page(self.screen0)
+        self.set_page_type(self.screen0, Gtk.AssistantPageType.CONTENT)
+        self.set_page_title(self.screen0, title)
+        self.set_page_side_image(self.screen0,
+                                 GdkPixbuf.Pixbuf.new_from_file("/usr/share/icons/gnome/128x128/apps/truecrypt-wizard.png"))
+        self.set_page_complete(self.screen0, True)
+
+    def setupScreen1(self):
+        """ Setup screen number 1 """
+        text3 = _("Volume _label:")
+        text4 = _("Container _size:")
+        self.volumeTitle = _("Volume Selection")
+        self.screen1 = Gtk.VBox()
+        self.entry = Gtk.Entry()
+        self.entry2 = Gtk.Entry()
+        self.entry2.connect("changed", self.onLabelChange)
+        self.spin0 = Gtk.SpinButton(adjustment=self.size, climb_rate=0.1, digits=1)
+        self.spin0.set_alignment(1)
+        self.spin0.set_numeric(True)
+        self.spin0.set_snap_to_ticks(True)
+        self.spin0.set_size_request(125, 25)
+        self.spin0.set_increments(0.1, 10)
+        self.spin0.set_update_policy(Gtk.SpinButtonUpdatePolicy.IF_VALID)
+        self.label_free = Gtk.Label()
+        self.label_free.set_use_markup(True)
+        self.contbox = self.containerBox()
+        self.screen1.pack_start(self.contbox, False, False, 0)
+        self.devbox = self.deviceBox()
+        self.screen1.pack_start(self.devbox, False, False, 0)
+        sep0 = Gtk.HSeparator()
+        self.screen1.pack_start(sep0, False, False, 10)
+        hbox1 = Gtk.HBox(homogeneous=False, spacing=10)
+        self.screen1.pack_start(hbox1, False, False, 5)
+        labelbox1 = Gtk.HBox(homogeneous=False, spacing=0)
+        labelbox1.set_size_request(125, 25)
+        hbox1.pack_start(labelbox1, False, False, 0)
+        label1 = Gtk.Label(label=text3)
+        label1.set_use_underline(True)
+        labelbox1.pack_end(label1, False, False, 0)
+        label1.set_mnemonic_widget(self.entry2)
+        hbox1.pack_start(self.entry2, False, False, 0)
+        hbox2 = Gtk.HBox(homogeneous=False, spacing=10)
+        self.screen1.pack_start(hbox2, False, False, 5)
+        labelbox2 = Gtk.HBox(homogeneous=False, spacing=0)
+        labelbox2.set_size_request(125, 25)
+        hbox2.pack_start(labelbox2, False, False, 0)
+        label2 = Gtk.Label(label=text4)
+        label2.set_use_underline(True)
+        labelbox2.pack_end(label2, False, False, 0)
+        self.checkContainer()
+        hbox2.pack_start(self.spin0, False, False, 0)
+        label3 = Gtk.Label(label="MB")
+        hbox2.pack_start(label3, False, False, 0)
+        hbox2.pack_start(self.label_free, False, False, 0)
+        self.append_page(self.screen1)
+        self.set_page_type(self.screen1, Gtk.AssistantPageType.CONTENT)
+        self.set_page_title(self.screen1, self.volumeTitle)
+        self.set_page_side_image(self.screen1,
+                                 GdkPixbuf.Pixbuf.new_from_file("/usr/share/icons/gnome/"
+                                                                "128x128/apps/truecrypt-wizard.png"))
+        
+    def containerBox(self):
+        """ Dialog box for selecting a container. """
+        text1 = _("_Container file:")
+        text2 = _("_Browse")
+        vbox = Gtk.VBox()
+        hbox0 = Gtk.HBox(homogeneous=False, spacing=10)
+        vbox.pack_start(hbox0, False, False, 5)
+        labelbox0 = Gtk.HBox(homogeneous=False, spacing=0)
+        labelbox0.set_size_request(125, 25)
+        hbox0.pack_start(labelbox0, False, False, 0)
+        label0 = Gtk.Label(label=text1)
+        label0.set_use_underline(True)
+        labelbox0.pack_end(label0, False, False, 0)
+        self.entry.set_text(self.volume)
+        label0.set_mnemonic_widget(self.entry)
+        hbox0.pack_start(self.entry, True, True, 0)
+        browse = Gtk.Button(label=text2)
+        browse.set_use_underline(True)
+        hbox0.pack_start(browse, False, False, 0)
+        self.entry.connect("changed", self.onVolumeChange)
+        self.set_focus(browse)
+        browse.connect("clicked", self.onBrowse)
+        self.blockVolumeChange = False
+        return vbox
+        
+    def deviceBox(self):
+        """ Dialog box for selecting a device. """
+        text0 = _("_Data medium:")        
+        vbox = Gtk.VBox()
+        hbox0 = Gtk.HBox(homogeneous=False, spacing=10)
+        vbox.pack_start(hbox0, False, False, 5)
+        labelbox0 = Gtk.HBox(homogeneous=False, spacing=0)
+        labelbox0.set_size_request(125, 25)
+        hbox0.pack_start(labelbox0, False, False, 0)
+        label0 = Gtk.Label(label=text0)
+        label0.set_use_underline(True)
+        labelbox0.pack_end(label0, False, False, 0)
+        combo = Gtk.ComboBoxText()
+        label0.set_mnemonic_widget(combo)
+        self.fillDevices(combo)
+        hbox0.pack_start(combo, True, True, 0)
+        combo.connect("changed", self.onVolumeChange)
+        self.blockVolumeChange = False
+        return vbox
+        
+    def setupScreen2(self):
+        """ Setup screen number 2 """
+        title = _("Encryption options")
+        text0 = _("_Password:")
+        text1 = _("_Confirm password:")
+        text2 = _("_Encryption algorithm:")
+        text3 = _("_Hash algorithm:")
+        text4 = _("_Display password")
+        self.screen2 = Gtk.VBox()
+        hbox0 = Gtk.HBox(homogeneous=False, spacing=10)
+        self.screen2.pack_start(hbox0, False, False, 5)
+        labelbox0 = Gtk.HBox(homogeneous=False, spacing=0)
+        labelbox0.set_size_request(200, 25)
+        hbox0.pack_start(labelbox0, False, False, 0)
+        label0 = Gtk.Label(label=text0)
+        label0.set_use_underline(True)
+        labelbox0.pack_end(label0, False, False, 0)
+        self.entry0 = Gtk.Entry()
+        self.entry0.set_text(self.password)
+        self.entry0.set_visibility(False)
+        label0.set_mnemonic_widget(self.entry0)
+        hbox0.pack_start(self.entry0, True, True, 0)
+        hbox1 = Gtk.HBox(homogeneous=False, spacing=10)
+        self.screen2.pack_start(hbox1, False, False, 5)
+        labelbox1 = Gtk.HBox(homogeneous=False, spacing=0)
+        labelbox1.set_size_request(200, 25)
+        hbox1.pack_start(labelbox1, False, False, 0)
+        label1 = Gtk.Label(label=text1)
+        label1.set_use_underline(True)
+        labelbox1.pack_end(label1, False, False, 0)
+        self.entry1 = Gtk.Entry()
+        self.entry1.set_text(self.password)
+        self.entry1.set_visibility(False)
+        label1.set_mnemonic_widget(self.entry1)
+        hbox1.pack_start(self.entry1, True, True, 0)
+        hbox2 = Gtk.HBox(homogeneous=False, spacing=10)
+        self.screen2.pack_start(hbox2, False, False, 5)
+        spacebox = Gtk.HBox(homogeneous=False, spacing=0)
+        spacebox.set_size_request(200, 25)
+        hbox2.pack_start(spacebox, False, False, 0)
+        chkvisible = Gtk.CheckButton(label=text4)
+        chkvisible.set_use_underline(True)
+        chkvisible.set_active(False)
+        hbox2.pack_start(chkvisible, False, False, 0)
+        self.pw_warning = Gtk.Label()
+        self.pw_warning.set_use_markup(True)
+        self.screen2.pack_start(self.pw_warning, False, False, 0)
+        self.entry0.connect("changed", self.onPasswordChange)
+        self.entry1.connect("changed", self.onPasswordConfirm)
+        chkvisible.connect("toggled", self.onVisibilityChange)
+        sep0 = Gtk.HSeparator()
+        self.screen2.pack_start(sep0, False, False, 10)
+        hbox3 = Gtk.HBox(homogeneous=False, spacing=10)
+        self.screen2.pack_start(hbox3, False, False, 5)
+        labelbox2 = Gtk.HBox(homogeneous=False, spacing=0)
+        labelbox2.set_size_request(200, 25)
+        hbox3.pack_start(labelbox2, False, False, 0)
+        label2 = Gtk.Label(label=text2)
+        label2.set_use_underline(True)
+        labelbox2.pack_end(label2, False, False, 0)
+        self.combo_encryption = Gtk.ComboBoxText()
+        label2.set_mnemonic_widget(self.combo_encryption)
+        self.fillEncryptionAlgorithms(self.combo_encryption)
+        hbox3.pack_start(self.combo_encryption, True, True, 0)
+        self.combo_encryption.connect("changed", self.onEncryptionChange)
+        hbox4 = Gtk.HBox(homogeneous=False, spacing=10)
+        self.screen2.pack_start(hbox4, False, False, 5)
+        labelbox3 = Gtk.HBox(homogeneous=False, spacing=0)
+        labelbox3.set_size_request(200, 25)
+        hbox4.pack_start(labelbox3, False, False, 0)
+        label3 = Gtk.Label(label=text3)
+        label3.set_use_underline(True)
+        labelbox3.pack_end(label3, False, False, 0)
+        self.combo_hash = Gtk.ComboBoxText()
+        label3.set_mnemonic_widget(self.combo_hash)
+        self.fillHashAlgorithms(self.combo_hash)
+        hbox4.pack_start(self.combo_hash, True, True, 0)
+        self.set_focus(self.entry0)
+        self.combo_hash.connect("changed", self.onHashChange)
+        self.append_page(self.screen2)
+        self.set_page_type(self.screen2, Gtk.AssistantPageType.CONTENT)
+        self.set_page_title(self.screen2, title)
+        self.set_page_side_image(self.screen2,
+                                 GdkPixbuf.Pixbuf.new_from_file("/usr/share/icons/gnome/128x128/apps/truecrypt-wizard.png"))
+        self.set_page_complete(self.screen2, len(self.password) > 0)
+
+    def setupScreen3(self):
+        """ Setup screen number 3 """
+        self.createTitle = _("Volume Creation")
+        text0 = _("IMPORTANT: "
+                  "Move the mouse for about a minute as randomly as possible. "
+                  "This enhances the cryptographic strength of the encryption. "
+                  "When you are done with that click \"Generate\".")
+        text1 = _("_Generate")
+        text2 = _("_Stop")
+        self.screen3 = Gtk.VBox()
+        label0 = Gtk.Label(label="")
+        label0.set_justify(Gtk.Justification.CENTER)
+        label0.set_line_wrap(True)
+        label0.set_markup("<b>" + text0 + "</b>")
+        self.screen3.pack_start(label0, False, False, 0)
+        self.pbar = Gtk.ProgressBar()
+        self.screen3.pack_start(self.pbar, False, False, 10)
+        hbox0 = Gtk.HBox(homogeneous=False, spacing=40)
+        self.screen3.pack_start(hbox0, False, False, 0)
+        self.generate = Gtk.Button(label=text1)
+        self.generate.set_use_underline(True)
+        self.generate.set_size_request(150, 25)
+        hbox0.pack_start(self.generate, False, False, 50)
+        self.stop = Gtk.Button(label=text2)
+        self.stop.set_use_underline(True)
+        self.stop.set_size_request(150, 25)
+        self.stop.set_sensitive(False)
+        hbox0.pack_end(self.stop, False, False, 50)
+        self.set_focus(self.generate)
+        self.generate.connect("clicked", self.onGenerate)
+        self.stop.connect("clicked", self.onStop)
+        self.append_page(self.screen3)
+        self.set_page_type(self.screen3, Gtk.AssistantPageType.CONTENT)
+        self.set_page_title(self.screen3, self.createTitle)
+        self.set_page_side_image(self.screen3,
+                                 GdkPixbuf.Pixbuf.new_from_file("/usr/share/icons/gnome/128x128/apps/truecrypt-wizard.png"))
+
+
+    def onExtendedVolume(self, widget):
+        """ Handle toggle of button "Create an extended volume" """
+        self.extended = self.chk0.get_active()
+        self.updateScreens()
+
+    def onBackupVolume(self, widget):
+        """ Handle toggle of button "Create a volume for automatic backups" """
+        self.useBackup = self.chk1.get_active()
+        self.updateScreens()
+
+    def onDeviceVolume(self, widget):
+        """ Handle switching of radio buttons for file/device volumes """
+        self.useDevice = self.rad1.get_active()
+        self.fsLabel = ""
+        self.volume = ""
+        self.size.set_value(0)
+        self.updateScreens()
+
+    def onVolumeChange(self, widget):
+        """ Handle change of volume """
+        if not self.blockVolumeChange:
+            self.blockVolumeChange = True
+            if self.useDevice:
+                msg = _("All data on the data medium will be lost!\n")
+                msg += _("Are you sure you want to encrypt this data medium?")
+                if self.askUser(msg, self.volumeTitle):
+                    name = widget.get_active_text()
+                    start = name.rfind("(") + 1
+                    end = name.find(",", start)
+                    self.volume = name[start:end]
+                    self.checkDevice()
+                else:
+                    widget.set_active(-1)
+                    self.volume = ""
+            else:
+                self.volume = widget.get_text()
+                self.checkContainer()
+            self.blockVolumeChange = False
+            self.updateScreens()
+
+    def onLabelChange(self, widget):
+        """ Handle change of file system label """
+        self.fsLabel = widget.get_text()
+        self.updateScreens()
+
+    def onBrowse(self, widget):
+        """ Select container with a file browser """
+        title = _("Container Selection")
+        nameTC = _("Container files")
+        nameAll = _("All files")
+        if self.useBackup:
+            dlg = Gtk.FileChooserDialog(title=title, parent=None,
+                                        action=Gtk.FileChooserAction.SELECT_FOLDER,
+                                        buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                                        Gtk.STOCK_OK, Gtk.ResponseType.OK))
+        else:
+            dlg = Gtk.FileChooserDialog(title=title, parent=None, 
+                                        action=Gtk.FileChooserAction.SAVE,
+                                        buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                                        Gtk.STOCK_OK, Gtk.ResponseType.OK))
+        dlg.set_default_response(Gtk.ResponseType.OK)
+        dlg.set_position(Gtk.WindowPosition.CENTER)
+        dlg.set_icon(self.icon)
+        dlg.set_do_overwrite_confirmation(True)
+        filterTC = Gtk.FileFilter()
+        filterTC.set_name(nameTC)
+        filterTC.add_pattern("*.hc")
+        filterTC.add_pattern("*.tc")
+        filterAll = Gtk.FileFilter()
+        filterAll.set_name(nameAll)
+        filterAll.add_pattern("*")
+        dlg.add_filter(filterTC)
+        dlg.add_filter(filterAll)
+        if self.volume:
+            dlg.set_filename(self.volume)
+        else:
+            dlg.set_current_folder("/media")
+        if dlg.run() == Gtk.ResponseType.OK:
+            name = dlg.get_filename()
+            if self.useBackup:
+                name = os.path.join(name, "backup.hc")
+                if os.path.exists(name):
+                    if not truecrypthelper.ask_user(_("Overwrite existing?"),
+                                    _("A backup container already exists at that "
+                                      "location. Do you want to overwrite it?")):
+                        dlg.destroy()
+                        self.onBrowse(widget)
+                        return
+            self.entry.set_text(name)
+        dlg.destroy()
+        self.updateScreens()
+
+
+    def onPasswordChange(self, widget):
+        """ Handle change of password """
+        self.password = widget.get_text()
+        self.updateScreens()
+
+    def onPasswordConfirm(self, widget):
+        """ Handle change of password confirmation """
+        self.updateScreens()
+
+    def onEncryptionChange(self, widget):
+        """ Handle change of encryption algorithm """
+        self.encryptionAlgorithm = widget.get_active_text()
+
+    def onHashChange(self, widget):
+        """ Handle change of hash algorithm """
+        self.hashAlgorithm = widget.get_active_text()
+
+    def onVisibilityChange(self, widget):
+        """ Handle change of visibility of password """
+        self.entry0.set_visibility(widget.get_active())
+        self.entry1.set_visibility(widget.get_active())
+        
+    def onModeChange(self, widget):
+        """ Handle change of encryption algorithm """
+        self.mode = widget.get_active_text()
+        self.fillEncryptionAlgorithms(self.combo_encryption)
+        self.fillHashAlgorithms(self.combo_hash)
+
+    def onGenerate(self, widget):
+        """ Start creation of volume """
+        self.generate.set_sensitive(False)
+        while Gdk.events_pending():
+            Gtk.main_iteration()
+        self.set_page_type(self.screen3, Gtk.AssistantPageType.PROGRESS)
+        if self.useDevice:
+            self.partitionDevice()
+            if self.useBackup:
+                self.writeBackupSignature()
+        self.pbar.set_text(_("Generating volume..."))
+        self.pbar.set_fraction(0.01)
+        self.stop.set_sensitive(True)
+        if self.format_menu.get_active_text() == "LUKS":
+            tmpfd, self.tmpf = tempfile.mkstemp()
+            tmp = os.fdopen(tmpfd, 'w')
+            tmp.write(self.password)
+            tmp.close()
+            self.createLUKSVolume()
+            self.watch = GObject.io_add_watch(self.tc.stderr,
+                                          GObject.IO_IN | GObject.IO_HUP,
+                                          self.luksCallback)
+        else:
+            self.createTrueCryptVolume()
+            self.watch = GObject.io_add_watch(self.tc.stdout,
+                                          GObject.IO_IN | GObject.IO_HUP,
+                                          self.tcCallback)
+
+    def onStop(self, widget):
+        """ Stop creation of volume """
+        msg = _("Do you really want to stop volume creation?\n")
+        if self.useDevice:
+            msg += _("The data medium becomes unusable thereby.")
+        else:
+            msg += _("The container will be removed in doing that.")
+        if self.askUser(msg, self.createTitle):
+            try:
+                GObject.source_remove(self.watch)
+            except:
+                pass
+            try:
+                self.tc.terminate()
+                self.tc.stdin.close()
+                self.tc.stdout.close()
+                self.tc.stderr.close()
+                widget.set_sensitive(False)
+            except OSError, err:
+                if err.errno == errno.ESRCH:
+                    msg = _("The process has just terminated.\n")
+                    msg += _("So we will continue.")
+                    self.displayMessage(Gtk.MessageType.INFO, msg, self.createTitle)
+            except:
+                pass
+            if not self.useDevice and os.path.exists(self.volume):
+                os.remove(self.volume)
+            self.destroy()
+            
+    def get_file_size(self, filename):
+        """ Get the file size by seeking at end """
+        fd= os.open(filename, os.O_RDONLY)
+        try:
+            return os.lseek(fd, 0, os.SEEK_END)
+        finally:
+            os.close(fd)
+
+    def luksCallback(self, fd, condition):
+        """ Callback function, called when output of pv during LUKS container creation is available """
+        if self.tc.poll() != None:
+            timer = GObject.timeout_add(50, self.luksTimeoutCallback)
+            return False
+        try:
+            line = fd.readline()
+            frac = float(line[64:66])/100.0
+        except ValueError:
+            frac = 0.0
+        if frac < 0.02:
+            frac = 0.02
+        elif frac >= 1.0:
+            timer = GObject.timeout_add(50, self.luksTimeoutCallback)
+        else:
+            print frac
+            self.pbar.set_fraction(frac)
+            self.pbar.set_text(line.strip())
+        return frac < 1.0
+        
+    def luksTimeoutCallback(self):
+        """ Called when LUKS container creation is done. """
+        while Gdk.events_pending():
+            Gtk.main_iteration()
+        ret = self.tc.poll()
+        if ret is None:
+            return True
+        self.tc.stdin.close()
+        self.tc.stderr.close()
+        if ret != 0:
+            os.remove(self.tmpf)
+            self.closeLUKSVolume()
+            self.failed("Cryptsetup failed with %i" % ret)
+        self.stop.set_sensitive(False)
+        self.pbar.set_fraction(1.0)
+        Gtk.main_iteration()
+        if not self.useDevice:
+            try:
+                os.chown(self.volume, self.uid, self.gid)
+                os.chmod(self.volume, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP |
+                         stat.S_IWGRP | stat.S_IROTH | stat.S_IWOTH) 
+            except OSError:
+                pass
+        if self.extended:
+            self.makeExtended()
+        else:
+            self.setMSDOSLabel()
+        os.remove(self.tmpf)
+        return False
+
+    def tcCallback(self, fd, condition):
+        """ Callback function, called when output of truecrypt is available """
+        if self.tc.poll() != None:
+            timer = GObject.timeout_add(50, self.tcTimeoutCallback)
+            return False
+        try:
+            line = fd.readline()
+            frac = float(line[6:13].replace(",", "."))/100.0
+        except ValueError:
+            frac = 0.0
+        if frac < 0.02:
+            frac = 0.02
+        elif frac >= 1.0:
+            timer = GObject.timeout_add(50, self.tcTimeoutCallback)
+        else:
+            self.pbar.set_fraction(frac)
+            self.pbar.set_text(line.strip())
+        return frac < 1.0
+
+    def tcTimeoutCallback(self):
+        """ Called when truecrypt container creation is done. """
+        while Gdk.events_pending():
+            Gtk.main_iteration()
+        ret = self.tc.poll()
+        if ret is None:
+            return True
+        self.tc.stdin.close()
+        self.tc.stdout.close()
+        self.tc.stderr.close()
+        if ret != 0:
+            self.failed("VeraCrypt failed with %i" % ret)
+        self.stop.set_sensitive(False)
+        self.pbar.set_fraction(1.0)
+        Gtk.main_iteration()
+        if not self.useDevice:
+            try:
+                os.chown(self.volume, self.uid, self.gid)
+                os.chmod(self.volume, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP |
+                         stat.S_IWGRP | stat.S_IROTH | stat.S_IWOTH) 
+            except OSError:
+                pass
+        if self.extended:
+            self.makeExtended()
+        else:
+            self.setMSDOSLabel()
+        return False
+
+    def checkDevice(self):
+        """ Check a selected container file """
+        if self.volume:
+            self.device = parted.Device(self.volume)
+            size = self.device.length*self.device.sectorSize
+            self.size.set_lower(size/1048576)
+            self.size.set_upper(size/1048576)
+            self.size.set_value(size/1048576)
+            self.set_page_complete(self.screen1, len(self.fsLabel) > 0)
+
+    def getFilesystem(self, path):
+        """ Return the filesystem of a mounted volume. """
+        fs = None
+        try:
+            while not os.path.ismount(path):
+                path = os.path.split(path)[0]
+            p = open('/proc/mounts', 'r')
+            proc = p.readlines()
+            p.close()
+            fs = re.search("^[-/a-zA-Z0-9]* " + path + " ([a-zA-Z0-9]+)",
+                           ''.join(proc), re.MULTILINE).group(1)
+        except:
+            pass
+        return fs
+
+    def checkContainer(self):
+        """ Check a selected container file """
+        dirpath, filename = os.path.split(self.volume)
+        if os.path.exists(dirpath) and filename:
+            self.makeLabelFromFileName(filename)
+            self.entry2.set_text(self.fsLabel)
+            statdata = os.statvfs(dirpath)
+            maxsize = statdata.f_bsize*statdata.f_bavail
+            if (self.getFilesystem(dirpath) == "vfat") and (maxsize > 4294967296):
+                maxsize = 4294967295
+            self.label_free.set_label("<small> " + _("%s MB max.") % str(maxsize / 1048576) + "</small>")
+            if self.size.get_value() > 0 and self.size.get_value() < maxsize / 1048576:
+                size = self.size.get_value() * 1048576
+            else:
+                size = maxsize
+            self.size.set_lower(0.1)
+            self.size.set_upper(maxsize/1048576)
+            self.size.set_value(size/1048576)
+            self.set_page_complete(self.screen1, True)
+        else:
+            self.set_page_complete(self.screen1, False)
+
+
+    def makeLabelFromFileName(self, filename):
+        """ Make a file system label from the file name of the volume """
+        self.fsLabel = os.path.splitext(filename)[0]
+        self.fsLabel = filter(lambda c: c.isalnum() or c in "-_ ", self.fsLabel)
+        if self.extended:
+            self.fsLabel = self.fsLabel[0:16]
+        else:
+            self.fsLabel = self.fsLabel.upper()[0:11]
+
+
+    def displayMessage(self, level, msg, title=None):
+        """ Display a message to the user """
+        opt = Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT
+        md = Gtk.MessageDialog(self, opt, level, Gtk.ButtonsType.CLOSE, msg)
+        md.set_position(Gtk.WindowPosition.CENTER)
+        md.set_icon(self.icon)
+        if title:
+            md.set_title(title)
+        md.run()
+        md.destroy()
+        while Gtk.events_pending():
+            Gtk.main_iteration()
+
+
+    def askUser(self, msg, title=None):
+        """ Present a yes/no question to the user """
+        opt = Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT
+        level = Gtk.MessageType.QUESTION
+        md = Gtk.MessageDialog(self, opt, level, Gtk.ButtonsType.YES_NO, msg)
+        md.set_position(Gtk.WindowPosition.CENTER)
+        md.set_icon(self.icon)
+        if title:
+            md.set_title(title)
+        md.set_default_response(Gtk.ResponseType.NO)
+        md.set_urgency_hint(True)
+        md.set_keep_above(True)
+        response = md.run()
+        md.destroy()
+        while Gtk.events_pending():
+            Gtk.main_iteration()
+        return response == Gtk.ResponseType.YES
+
+
+    def checkPassword(self):
+        """ Check the password for minimum length and not all letters  """
+        global pwNotAllAlpha, pwLen
+        allowedChars = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'
+        title = _("Password check")
+        msg1 = _("The password must be at least %d characters long!") % pwLen
+        msg2 = _("The password must contain at least one non-letter character!")
+        msg3 = _("The password contains unallowed characters. Allowed characters are:")
+        if len(self.password) < pwLen:
+            self.pw_warning.set_label("<span foreground=\"red\" size=\"small\"> " +
+                                      msg1 + "</span>")
+        elif pwNotAllAlpha and self.password.isalpha():
+            self.pw_warning.set_label("<span foreground=\"red\" size=\"small\"> " +
+                                      msg2 + "</span>")
+        elif len(self.password.strip(allowedChars)) != 0:
+            self.pw_warning.set_label("<span foreground=\"red\" size\"small\"> " +
+                                      msg3 + "\n" + allowedChars + "</span>")
+        else:
+            self.pw_warning.set_label("")
+            self.set_page_complete(self.screen2, True)
+
+    def fillEncryptionAlgorithms(self, combo):
+        """ Fill the combo box with the encryption algorithms  """
+        combo.remove_all()
+        if self.mode == "LUKS":
+            combo.append_text("AES")
+            combo.append_text("Serpent")
+            combo.append_text("Twofish")
+        else:
+            combo.append_text("AES")
+            combo.append_text("Serpent")
+            combo.append_text("Twofish")
+            combo.append_text("AES-Twofish")
+            combo.append_text("AES-Twofish-Serpent")
+            combo.append_text("Serpent-AES")
+            combo.append_text("Serpent-Twofish-AES")
+            combo.append_text("Twofish-Serpent")
+        index = 0
+        for row in combo.get_model():
+            if row[0] == self.encryptionAlgorithm:
+                combo.set_active(index)
+                break
+            index += 1
+        if combo.get_active() == -1:
+            if self.mode == "LUKS":
+                combo.set_active(0)
+            else:
+                combo.set_active(5)
+
+    def fillHashAlgorithms(self, combo):
+        """ Fill the combo box with the hash algorithms  """
+        combo.remove_all()
+        if self.mode == "LUKS":
+            combo.append_text("RIPEMD-160")
+            combo.append_text("SHA-512")
+        else:
+            combo.append_text("RIPEMD-160")
+            combo.append_text("SHA-512")
+            combo.append_text("Whirlpool")
+        index = 0
+        for row in combo.get_model():
+            if row[0] == self.hashAlgorithm:
+                combo.set_active(index)
+                break
+            index += 1
+        if combo.get_active() == -1:
+            combo.set_active(1)
+
+    def fillDevices(self, combo):
+        """ Fill the combo box with the devices  """
+        usbList = self.getUSBStorageList()
+        for dev in parted.getAllDevices():
+            name = "%s (%s, %.1f MB)" % (dev.model, dev.path, dev.getSize("MB"))
+            if self.isUsableDevice(dev, usbList):
+                combo.append_text(name)
+        index = 0
+        if self.volume:
+            for row in combo.get_model():
+                if self.volume in row[0]:
+                    combo.set_active(index)
+                    break
+                index += 1
+
+    def isUsableDevice(self, device, usbList):
+        """ Check wether the device may be used for a TrueCrypt volume """
+        ok = False
+        # Special case for DSCTL running from USB drive
+        cdromdev = Popen(["grep", "/lib/live/mount/medium", "/proc/mounts"], stdout=PIPE).communicate()[0]
+        if cdromdev and device.path == cdromdev.split()[0]:
+            return False        
+        if not device.readOnly:
+            if device.type == parted.DEVICE_SCSI:
+                ok = device.path in usbList # USB storage 
+            elif device.type == parted.DEVICE_SDMMC:
+                ok = True # SD-MMC card
+            elif device.type == parted.DEVICE_UNKNOWN:
+                ok = (device.length == 2880) # floppy-disk
+        return ok
+
+    def getUSBStorageList(self):
+        """ Get the list of USB storage device files """
+        usbList = list()
+        context = pyudev.Context()
+        for device in context.list_devices(subsystem='block', ID_BUS='usb'):
+            if device.device_type == "disk" or device.device_type == "sd_mmc":
+                usbList.append(device.device_node)
+        return usbList
+
+    def partitionDevice(self):
+        """ Make msdos partition table and create one partition on device """
+        if not self.unmountPartitions():
+            self.failed(_("Could not unmount device. Maybe there is an open TrueCrypt volume on it?"))
+        fd = os.open(self.device.path, os.O_RDWR | os.O_SYNC)
+        zd = os.open('/dev/zero', os.O_RDONLY)
+        os.write(fd, os.read(zd, 1048576))
+        os.close(zd)
+        os.close(fd)
+        try:
+            disk = parted.freshDisk(self.device, "msdos")
+            geo = parted.Geometry(self.device, 1, self.device.length - 1)
+            startSect = self.device.optimumAlignment.alignUp(geo, 1)
+            endSect = self.device.optimumAlignment.alignDown(geo, self.device.length)
+            optgeo = parted.Geometry(device=self.device, start=startSect, end=endSect)
+            part = parted.Partition(disk, parted.PARTITION_NORMAL, None, optgeo)
+            constraint = parted.Constraint(device=self.device, exactGeom=optgeo)
+            disk.addPartition(part, constraint)
+            disk.commit()
+        except:
+            self.failed(_("Could not partition device. The error returned was:\n%s") % sys.exc_info())
+        self.partition = disk.partitions[0]
+        self.volume = self.partition.path
+
+    def unmountPartitions(self):
+        """ Unmount all partitions on the device """
+        try:
+            disk = parted.Disk(self.device)
+            for part in disk.partitions:
+                args = ["/bin/umount", part.path]
+                umount = self.callProcess(args)
+                self.waitProcess(umount)
+        except parted.DiskLabelException:
+            return True
+        except:
+            return False
+        openfiles = Popen(["/usr/bin/lsof", "-w", self.device.path], stdout=PIPE).communicate()[0]
+        for part in disk.partitions:
+            openfiles += Popen(["/usr/bin/lsof", "-w", part.path], stdout=PIPE).communicate()[0]
+        if len(openfiles) > 0:
+            return False
+        return True
+
+    def writeBackupSignature(self):
+        """ Write the disk-signature "BKUP" into the MBR of the device """
+        fd = os.open(self.device.path, os.O_RDWR | os.O_SYNC)
+        os.lseek(fd, 440, 0)
+        os.write(fd, "BKUP")
+        os.close(fd)
+
+    def createLUKSVolume(self):
+        """ Create LUKS Volume """
+        if not self.useDevice:
+            if os.path.exists(self.volume):
+                try:
+                    os.remove(self.volume)
+                except:
+                    self.failed(_("Could not remove already existing "
+                                  "file %s, cannot continue!") % self.volume)
+                    return
+            try:
+                vol = open(self.volume, 'w')
+                vol.seek(int(self.size.get_value() *1048576))
+                vol.write("\0")
+                vol.close()
+            except:
+                    self.failed(_("An error occured while trying "
+                                  "to allocate the container file"))
+                    return
+        args = ["cryptsetup", "-q", "-d", self.tmpf, "--force-password", "-c", \
+                "%s-xts-plain" % self.encryptionAlgorithm.lower(), "-h", \
+                self.hashAlgorithm.lower().translate(None, '-'), "-s", "512",\
+                "--use-urandom", "luksFormat", self.volume]
+        print args
+        cs = self.callProcess(args)
+        if self.waitProcess(cs) == 0:
+            self.openLUKSVolume()
+            luks_size = self.get_file_size("/dev/mapper/lukstmp")
+            args = ["pv", "-s", str(int(luks_size)), "-S", "-p",\
+                    "-e", "-r", "-e", "-f", "-w", "80", "/dev/zero"]
+            print args
+            self.tc = Popen(args=args, stdin=PIPE, stdout=open("/dev/mapper/lukstmp", 'w'), stderr=PIPE, close_fds=True, bufsize=1, universal_newlines=True)
+        else:
+            self.failed(_("An error occured while trying to create the container!"))
+
+    def createTrueCryptVolume(self, mode="VeraCrypt"):
+        """ Create the TrueCrypt volume """
+        if mode == "VeraCrypt":
+            self.truecrypt = truecrypthelper.vct
+        else:
+            self.truecrypt = truecrypthelper.tct
+        args = self.truecrypt + ["-c", "--non-interactive", "-k", ""]
+        args.append("--random-source=/dev/urandom")
+        args.append("--volume-type=normal")
+        if self.extended:
+            args.append("--filesystem=none")
+        else:
+            args.append("--filesystem=FAT")
+        args.append("--encryption=" + self.encryptionAlgorithm)
+        args.append("--hash=" + self.hashAlgorithm)
+        args.append("-p")
+        args.append(self.password)
+        if not self.useDevice:
+            args.append("--size=%d" % int(self.size.get_value() *1048576))
+        args.append(self.volume)
+        self.tc = self.callProcess(args)
+
+    def closeVolume(self):
+        if self.mode == "LUKS":
+            self.closeLUKSVolume()
+        else:
+            self.closeTrueCryptVolume()
+
+    def openLUKSVolume(self):
+        args = ["cryptsetup", "-q", "--key-file", self.tmpf, "luksOpen", self.volume, "lukstmp"]
+        tc = self.callProcess(args)
+        return self.waitProcess(tc) == 0
+
+    def openTrueCryptVolume(self):
+        """ Open the TrueCrypt volume """
+        args = self.truecrypt + ["--non-interactive", "-k", ""]
+        args.append("--filesystem=none")
+        args.append("-p")
+        args.append(self.password)
+        args.append(self.volume)
+        tc = self.callProcess(args)
+        return self.waitProcess(tc) == 0
+
+    def closeLUKSVolume(self):
+        args = ["cryptsetup", "-q", "luksClose", "lukstmp"]
+        tc = self.callProcess(args)
+        return self.waitProcess(tc) == 0
+        
+    def closeTrueCryptVolume(self):
+        """ Close the TrueCrypt volume """
+        args = self.truecrypt + ["--non-interactive", "-d", self.volume]
+        tc = self.callProcess(args)
+        return self.waitProcess(tc) == 0
+
+    def getTrueCryptMapperDevice(self):
+        """ Get the TrueCrypt mapper device of the open volume """
+        mapperDevice = ""
+        virtDevPrefix = "Virtual Device: "
+        args = self.truecrypt + ["--non-interactive", "-l", "-v"]
+        args.append(self.volume)
+        tc = self.callProcess(args)
+        for line in tc.stdout.readlines():
+            if line.startswith(virtDevPrefix):
+                mapperDevice = line[len(virtDevPrefix):].rstrip()
+                break
+        self.waitProcess(tc)
+        return mapperDevice
+
+    def makeExtended(self):
+        """ Make the TrueCrypt volume an extended one """
+        if self.mode != "LUKS":
+            if not self.openTrueCryptVolume():
+                self.failed(_("Could not open Container"))
+            mapperDevice = self.getTrueCryptMapperDevice()
+            if not mapperDevice:
+                self.closeTrueCryptVolume()
+                self.failed(_("Could not find device for Container"))
+        else:
+            mapperDevice = "/dev/mapper/lukstmp"
+        if not self.makeExt3FileSystem(mapperDevice):
+            self.closeVolume()
+            self.failed(_("Could not create filesystem on Container"))
+        if not self.useBackup:
+            self.createExtendedMarker(mapperDevice)
+        self.closeVolume()
+        self.finish()
+
+    def makeExt3FileSystem(self, device):
+        """ Make an ext3 file system on the TrueCrypt volume """
+        args = ["/sbin/mkfs.ext3", "-m", "0", "-L"]
+        args.append(self.fsLabel)
+        args.append(device)
+        mkfs = self.callProcess(args)
+        ret = mkfs.poll()
+        while ret == None:
+            sleep(0.05)
+            while Gdk.events_pending():
+                Gtk.main_iteration()
+            ret = mkfs.poll()
+        mkfs.stdin.close()
+        mkfs.stdout.close()
+        mkfs.stderr.close()
+        return ret == 0
+
+    def createExtendedMarker(self, device):
+        """ Create a marker file ".extended_volume" in the TrueCrypt volume """
+        mountpoint = tempfile.mkdtemp(".hc", ".", "/mnt")
+        args = ["/bin/mount", "-t", "ext3", device, mountpoint]
+        mount = self.callProcess(args)
+        ret = self.waitProcess(mount)
+        if ret == 0:
+            marker = os.path.join(mountpoint, ".extended_volume")
+            os.mknod(marker)
+            hidden = os.path.join(mountpoint, ".hidden")
+            fd = open(hidden, "w")
+            fd.write("lost+found\nVirtualBox VMs\n")
+            fd.close()
+            os.chown(mountpoint, self.uid, self.gid)
+            os.chown(marker, self.uid, self.gid)
+            os.chown(hidden, self.uid, self.gid)
+            args = ["/bin/umount", "-l", device]
+            umount = self.callProcess(args)
+            ret = self.waitProcess(umount)
+            if ret != 0:
+                self.failed(_("Could not unmount device. The error returned was:\n%i") % ret)
+        else:
+            self.failed("mount failed with %i" % ret)
+        try:
+            os.rmdir(mountpoint)
+        except:
+            self.failed(_("Could not remove temp dir. The error returned was:\n%s") % sys.exc_info())
+
+
+    def setMSDOSLabel(self):
+        """ Set an MSDOS file system label on the TrueCrypt volume """
+        if self.mode != "LUKS":
+            if not self.openTrueCryptVolume():
+                self.failed(_("Could not open Container"))
+            mapperDevice = self.getTrueCryptMapperDevice()
+            if not mapperDevice:
+                self.closeTrueCryptVolume()
+                self.failed(_("Could not find device for Container"))
+        else:
+            mapperDevice = "/dev/mapper/lukstmp"
+        args = ["/sbin/dosfslabel", mapperDevice, self.fsLabel]
+        dosfslabel = self.callProcess(args)
+        self.waitProcess(dosfslabel)
+        self.closeVolume()
+        self.finish()
+
+    def getGUID(self):
+        """ Get the user and group ID of the parent process """
+        #args = ["/bin/ps", "--no-headers", "-o", "gid,uid", str(os.getppid())]
+        #ps = self.callProcess(args)
+        #ids = ps.stdout.readline().split()
+        #self.waitProcess(ps)
+        #if len(ids) == 2:
+        #    self.gid = int(ids[0])
+        #    self.uid = int(ids[1])
+        self.uid = int(os.environ['SUDO_UID'])
+        self.gid = int(os.environ['SUDO_GID'])
+
+    def finish(self):
+        """ Finish the TrueCrypt volume creation """
+        msg = _("The encrypted volume has been successfully created.\n")
+        msg += _("It may be used now.")
+        self.displayMessage(Gtk.MessageType.INFO, msg, self.createTitle)
+        self.destroy()
+
+    def failed(self, error=None):
+        """ Inform the user that TrueCrypt volume creation failed """
+        msg = _("Error: Creating encrypted volume failed.")
+        if error != None:
+            msg += '\n\n' + _("Error information: %s") % error
+        syslog.openlog("tc-wizard")
+        syslog.syslog(syslog.LOG_DEBUG, "tc-wizard failed: %s" % str(error.encode('ascii', 'replace')))
+        syslog.closelog()
+        self.displayMessage(Gtk.MessageType.ERROR, msg, self.createTitle)
+        self.destroy()
+        sys.exit(1)
+
+    def callProcess(self, args):
+        """ Call an external process """
+        return Popen(args=args, stdin=PIPE, stdout=PIPE, stderr=PIPE, \
+                     close_fds=True, bufsize=1, universal_newlines=True)
+
+    def waitProcess(self, prog):
+        """ Wait for an external process to finish """
+        output = prog.communicate()
+        ret = prog.wait()
+        if len(output[0]) > 0:
+            print output[0]
+        if len(output[1]) > 0:
+            print output[1] 
+        prog.stdin.close()
+        prog.stdout.close()
+        prog.stderr.close()
+        return ret
+
+if __name__ == "__main__":
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "al:", ["minpasswordlength=", "allowalphapasswords"])
+    except getopt.GetoptError, err:
+        # print help information and exit:
+        print str(err) # will print something like "option -a not recognized"
+        sys.exit(2)
+    pwLen = -1
+    for o, a in opts:
+        if o in ("-a", "--allowalphapasswords"):
+            pwNotAllAlpha = False
+        elif o in ("-l", "--minpasswordlength"):
+            try:
+                pwLen = int(a)
+            except ValueError:
+                pwLen = 20
+    if pwLen < 0:
+        pwLen = 20
+    if not truecrypthelper.is_single_instance():
+        truecrypthelper.show_error(_("There is already another truecrypt-helper " +
+                     "process running, please let it finish first."))
+        sys.exit(1)
+    wizard = TrueCryptWizard()
+    Gtk.main()

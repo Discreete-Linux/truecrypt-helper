@@ -1,0 +1,12 @@
+msgid "TrueCrypt helper device listener"
+msgstr ""
+
+msgid "Listens for USB devices which could be TrueCrypt encrypted devices"
+msgstr ""
+
+msgid "Scan for TrueCrypt Volumes"
+msgstr ""
+
+msgid "Scans for already connected but not yet mounted TrueCrypt Volumes"
+msgstr ""
+

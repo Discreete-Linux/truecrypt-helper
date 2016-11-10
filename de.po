@@ -1,0 +1,932 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR UPR Team <info@privacy-cd.org>
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: truecrypt-helper 0.8\n"
+"Report-Msgid-Bugs-To: info@discreete-linux.org\n"
+"POT-Creation-Date: 2016-11-02 13:41+0100\n"
+"PO-Revision-Date: 2016-11-02 13:48+0100\n"
+"Last-Translator: UPR Team <info@privacy-cd.org>\n"
+"Language-Team: LANGUAGE <de@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#: tc-open:14 tc-close:14 tc-check:14
+msgid "Too many arguments."
+msgstr "Zu viele Parameter"
+
+#: tc-wizard:30
+msgid "VeraCrypt Volume Wizard"
+msgstr "VeraCrypt Container Assistent"
+
+#: tc-wizard:108
+msgid "Basic Settings"
+msgstr "Grundeinstellungen"
+
+#: tc-wizard:109
+msgid "Create an _extended volume"
+msgstr "Einen _erweiterten Container erzeugen"
+
+#: tc-wizard:110
+msgid "Create a volume for automatic _backups"
+msgstr "Einen Container für automatische Daten_sicherung erzeugen"
+
+#: tc-wizard:111
+msgid "Create a container _file"
+msgstr "Eine _Container-Datei erzeugen"
+
+#: tc-wizard:112
+msgid "Use an entire _data medium for created volume"
+msgstr "Einen ganzen _Datenträger für das erzeugte Volumen benutzen"
+
+#: tc-wizard:145
+msgid "Volume _label:"
+msgstr "Volumen-Kennung:"
+
+#: tc-wizard:146
+msgid "Container _size:"
+msgstr "Container-Größe:"
+
+#: tc-wizard:147
+msgid "Volume Selection"
+msgstr "Container-Auswahl"
+
+#: tc-wizard:199
+msgid "_Container file:"
+msgstr "_Container-Datei:"
+
+#: tc-wizard:200
+msgid "_Browse"
+msgstr "_Suchen"
+
+#: tc-wizard:224
+msgid "_Data medium:"
+msgstr "_Datenträger:"
+
+#: tc-wizard:244
+msgid "Encryption options"
+msgstr "Verschlüsselungsoptionen"
+
+#: tc-wizard:245
+msgid "_Password:"
+msgstr "_Passwort:"
+
+#: tc-wizard:246
+msgid "_Confirm password:"
+msgstr "Passwort_bestätigung:"
+
+#: tc-wizard:247
+msgid "_Encryption algorithm:"
+msgstr "_Verschlüsselungs-Algorithmus:"
+
+#: tc-wizard:248
+msgid "_Hash algorithm:"
+msgstr "_Hash-Algorithmus:"
+
+#: tc-wizard:249
+msgid "_Display password"
+msgstr "Passwort _anzeigen"
+
+#: tc-wizard:330
+msgid "Volume Creation"
+msgstr "Container-Erzeugung"
+
+#: tc-wizard:331
+msgid ""
+"IMPORTANT: Move the mouse for about a minute as randomly as possible. This "
+"enhances the cryptographic strength of the encryption. When you are done "
+"with that click \"Generate\"."
+msgstr ""
+"WICHTIG: Bewegen Sie die Maus für etwa eine Minute so zufällig wie möglich. "
+"Das erhöht die kryptografische Stärke der Verschlüsselung. Wenn Sie damit "
+"fertig sind, klicken Sie auf \"Erzeugen\"."
+
+#: tc-wizard:335
+msgid "_Generate"
+msgstr "_Erzeugen"
+
+#: tc-wizard:336
+msgid "_Stop"
+msgstr "_Stop"
+
+#: tc-wizard:389
+msgid "All data on the data medium will be lost!\n"
+msgstr "Alle Daten auf dem Datenträger gehen verloren!\n"
+
+#: tc-wizard:390
+msgid "Are you sure you want to encrypt this data medium?"
+msgstr "Sind Sie sicher, dass Sie diesen Datenträger verschlüsseln wollen?"
+
+#: tc-wizard:413
+msgid "Container Selection"
+msgstr "Container-Auswahl"
+
+#: tc-wizard:414
+msgid "TrueCrypt files"
+msgstr "TrueCrypt Dateien"
+
+#: tc-wizard:415
+msgid "All files"
+msgstr "Alle Dateien"
+
+#: tc-wizard:447
+msgid "Overwrite existing?"
+msgstr "Existierenden überschreiben?"
+
+#: tc-wizard:448
+msgid ""
+"A backup container already exists at that location. Do you want to overwrite "
+"it?"
+msgstr ""
+"Es existiert bereits ein Backup-Container an diesem Ort. Soll er "
+"überschrieben werden?"
+
+#: tc-wizard:488
+msgid "Generating volume..."
+msgstr "Volumen wird erzeugt..."
+
+#: tc-wizard:498
+msgid "Do you really want to stop volume creation?\n"
+msgstr "Wollen Sie wirklich die Erzeugung des Volumens stoppen?\n"
+
+#: tc-wizard:500
+msgid "The data medium becomes unusable thereby."
+msgstr "Der Datenträger wird dadurch unbenutzbar."
+
+#: tc-wizard:502
+msgid "The container will be removed in doing that."
+msgstr "Der Container wird dabei wieder gelöscht."
+
+#: tc-wizard:515
+msgid "The process has just terminated.\n"
+msgstr "Der Prozess hat sich gerade beendet.\n"
+
+#: tc-wizard:516
+msgid "So we will continue."
+msgstr "Daher wird fortgefahren."
+
+#: tc-wizard:602
+#, python-format
+msgid "%s MB max."
+msgstr "%s MB max."
+
+#: tc-wizard:662
+msgid "Password check"
+msgstr "Passwort Prüfung"
+
+#: tc-wizard:663
+#, python-format
+msgid "The password must be at least %d characters long!"
+msgstr "Das Passwort muss mindestens %d Zeichen lang sein!"
+
+#: tc-wizard:664
+msgid "The password must contain at least one non-letter character!"
+msgstr ""
+"Das Passwort muss mindestens ein Zeichen enthalten, welches kein Buchstabe "
+"ist!"
+
+#: tc-wizard:665
+msgid "The password contains unallowed characters. Allowed characters are:"
+msgstr "Das Passwort enthält ungültige Zeichen. Erlaubte Zeichen sind:"
+
+#: tc-wizard:751
+msgid ""
+"Could not unmount device. Maybe there is an open TrueCrypt volume on it?"
+msgstr ""
+"Konnte das Gerät nicht aushängen. Möglicherweise ist noch ein TrueCrypt "
+"Volume darauf geöffnet?"
+
+#: tc-wizard:768
+#, python-format
+msgid ""
+"Could not partition device. The error returned was:\n"
+"%s"
+msgstr "Konnte das Gerät nicht partitionieren. Der Fehlercode war %s"
+
+#: tc-wizard:853 tc-wizard:917
+msgid "Could not open Container"
+msgstr "Konnte Container nicht öffnen"
+
+#: tc-wizard:857 tc-wizard:921
+msgid "Could not find device for Container"
+msgstr "Konnte kein Gerät zu diesem Container finden"
+
+#: tc-wizard:860
+msgid "Could not create filesystem on Container"
+msgstr "Konnte kein Dateisystem auf dem Container anlegen"
+
+#: tc-wizard:905
+#, python-format
+msgid ""
+"Could not unmount device. The error returned was:\n"
+"%i"
+msgstr ""
+"Konnte das Gerät nicht aushängen. Der Fehlercode war:\n"
+"%i"
+
+#: tc-wizard:911
+#, python-format
+msgid ""
+"Could not remove temp dir. The error returned was:\n"
+"%s"
+msgstr ""
+"Konnte das temporäre Verzeichnis nicht entfernen. Der Fehlercode war %s"
+
+#: tc-wizard:942
+msgid "The TrueCrypt volume has been successfully created.\n"
+msgstr "Das TrueCrypt Volumen wurde erfolgreich erzeugt.\n"
+
+#: tc-wizard:943
+msgid "It may be used now."
+msgstr "Es kann jetzt benutzt werden."
+
+#: tc-wizard:950
+msgid "Error: Creating TrueCrypt volume failed."
+msgstr "Fehler: Das Erzeugen des TrueCrypt Volumens schlug fehl."
+
+#: tc-wizard:952
+#, python-format
+msgid "Error information: %s"
+msgstr "Fehlerinformation: %s"
+
+#: tc-wizard:1001
+msgid ""
+"There is already another truecrypt-helper process running, please let it "
+"finish first."
+msgstr ""
+"Es läuft noch ein anderer Truecrypt-Prozess, bitte warten Sie bis er "
+"abgeschlossen ist."
+
+#: wipefreespace:19
+msgid ""
+"This script does not work with multiple files selected. Please try again."
+msgstr ""
+"Dieses Skript funktioniert nicht mit mehreren ausgewählten Dateien. Bitte "
+"nur eine auswählen und nochmal versuchen."
+
+#: wipefreespace:43
+msgid ""
+"Do you really want to stop the wiping process? This may leave data fragments "
+"with random names behind, which can be safely deleted."
+msgstr ""
+"Wollen Sie den Überschreib-Vorgang wirklich abbrechen? Dadurch können "
+"Datenreste mit Zufallsnamen zurück bleiben, die gefahrlos gelöscht werden "
+"können."
+
+#: wipefreespace:64
+msgid "Wiping done"
+msgstr "Überschreiben abgeschlossen"
+
+#: wipefreespace:65
+#, python-format
+msgid "Wiping free space on %s has successfully completed"
+msgstr "Überschreiben des freien Speichers auf %s erfolgreich abgeschlossen."
+
+#: wipefreespace:70
+#, python-format
+msgid "Wiping was not sucessful. The errorcode returned was %s"
+msgstr "Überschreiben war nicht erfolgreich. Der Fehlercode war %s"
+
+#: wipefreespace:78
+#, python-format
+msgid ""
+"This will overwrite once the free space on the filesystem \n"
+"<i>%s</i>\n"
+"once with random data.\n"
+"\n"
+"Note that this\n"
+"a) May still leave small parts of data recoverable due to wear leveling "
+"mechanisms\n"
+"b) May shorten the life of flash media if used extensively.\n"
+"c) May leave meaningless data files on your drive if cancelled. These can be "
+"safely deleted.\n"
+"\n"
+"Click OK to continue."
+msgstr ""
+"Hierdurch wird der freie Speicherplatz auf \n"
+"<i>%s</i>\n"
+"einmal überschrieben. Bitte beachten Sie, dass\n"
+"a) Kleine Reste wiederherstellbarer Daten übrig bleiben können\n"
+"b) Die Lebensdauer von USB-Sticks bei häufigem Gebrauch abnehmen kann\n"
+"c) Sinnlose Dateien zurückbleiben können, wenn der Vorgang abgebrochen wird. "
+"Diese können gefahrlos gelöscht werden.\n"
+"\n"
+"Klicken Sie OK zum Fortfahren."
+
+#: wipefreespace:86
+msgid "_Multiple passes (for floppies)"
+msgstr "_Mehrere Durchgänge (für Disketten)"
+
+#: wipefreespace:98
+#, python-format
+msgid "Wiping free space on %s..."
+msgstr "Freier Speicherplatz auf %s wird gelöscht..."
+
+#: wipefreespace:102
+#, python-format
+msgid "Wiping free space on %s. This may take some time"
+msgstr "Freier Speicherplatz auf %s wird gelöscht. Das kann lange Zeit dauern."
+
+#: wipefreespace:105
+msgid "Wiping..."
+msgstr "Überschreibe..."
+
+#: wipefreespace:123
+#, python-format
+msgid ""
+"An error occured while trying to execute the wiping programm. The error was\n"
+"<i>%s</i>"
+msgstr ""
+"Ein Systemfehler ist aufgetreten. Der Fehler war\n"
+"\n"
+"<i>%s</i>"
+
+#: truecrypt-helper.py:94
+msgid "An error occured!"
+msgstr "Ein Fehler ist aufgetreten"
+
+#: truecrypt-helper.py:141
+msgid "TrueCrypt-Container"
+msgstr "TrueCrypt-Container"
+
+#: truecrypt-helper.py:142
+msgid "Treat this file as a truecrypt container"
+msgstr "Diese Datei als TrueCrypt-Container behandeln"
+
+#: truecrypt-helper.py:147
+msgid "Open"
+msgstr "Öffnen"
+
+#: truecrypt-helper.py:148
+msgid "Tries to open the file as a TrueCrypt container"
+msgstr "Versucht, die Datei als TrueCrypt Container zu öffnen"
+
+#: truecrypt-helper.py:151
+msgid "Check"
+msgstr "Prüfen"
+
+#: truecrypt-helper.py:152
+msgid "Checks the container filesystem"
+msgstr "Prüft das Dateisystem im Container"
+
+#: truecrypt-helper.py:158
+msgid "Unmount"
+msgstr "Aushängen"
+
+#: truecrypt-helper.py:159
+msgid "Unmounts the selected TrueCrypt Container"
+msgstr "Den ausgewählten TrueCrypt Container aushängen"
+
+#: truecrypt-helper.py:162
+msgid "Force-Unmount"
+msgstr "Aushängen erzwingen"
+
+#: truecrypt-helper.py:163
+msgid "Forcibly Unmounts the selected TrueCrypt Container"
+msgstr "Den ausgewählten TrueCrypt Container erzwungenermaßen aushängen"
+
+#: truecrypt-helper.py:169 truecrypt-helper.py:181
+msgid "Wipe free space"
+msgstr "Freien Speicher wipen"
+
+#: truecrypt-helper.py:170 truecrypt-helper.py:182
+msgid "Overwrites free space on the current location"
+msgstr "Überschreibt freien Speicherplatz am gegenwärtigen Ort."
+
+#: tc-check.ui:89
+msgid ""
+"You are about to check and repair a filesystem. Even though this works in "
+"most cases, it is advisable to have a backup in case something goes wrong. "
+"Do you want to continue?"
+msgstr ""
+"Sie sind dabei, ein Dateisystem zu prüfen und zu reparieren. Auch wenn dies "
+"in den meisten Fällen gelingt, sollten sie vorher eine Sicherung angefertigt "
+"haben. Wollen Sie fortfahren?"
+
+#: tc-check.ui:109
+msgid "Force dangerous repairs"
+msgstr "Unsichere Reparaturen durchführen"
+
+#: tc-check.ui:126
+msgid ""
+"WARNING: This enables repair actions which may further corrupt the "
+"filesystem if something goes wrong."
+msgstr ""
+"ACHTUNG: Dies aktiviert Reparaturen, die das Dateisystem im Falle eines "
+"Fehlschlags weiter beschädigen können"
+
+msgid "TrueCrypt helper device listener"
+msgstr "TrueCrypt Geräteerkennung"
+
+msgid "Listens for USB devices which could be TrueCrypt encrypted devices"
+msgstr "Sucht nach USB-Geräten, die TrueCrypt-verschlüsselt sein könnten."
+
+msgid "Scan for TrueCrypt Volumes"
+msgstr "Suche nach TrueCrypt-Volumes"
+
+msgid "Scans for already connected but not yet mounted TrueCrypt Volumes"
+msgstr ""
+"Sucht nach bereits angeschlossenen, aber nicht geöffneten TrueCrypt-Volumes"
+
+#~ msgid ""
+#~ "Please unmount TrueCrypt volumes using 'TrueCrypt-Container -> dismount' "
+#~ "from the context menu"
+#~ msgstr ""
+#~ "Bitte TrueCrypt Volumes über 'TrueCrypt-Container -> Aushängen' aus dem "
+#~ "Kontextmenü aushängen."
+
+#~ msgid "IMPORTANT: "
+#~ msgstr "WICHTIG: "
+
+#~ msgid "Move the mouse for about a minute as randomly as possible. "
+#~ msgstr "Bewegen Sie die Maus für etwa eine Minute so zufällig wie möglich. "
+
+#~ msgid "This enhances the cryptographic strength of the encryption. "
+#~ msgstr "Dies steigert die kryptographische Stärke der Verschlüsselung. "
+
+#~ msgid "When you are done with that click \"Generate\"."
+#~ msgstr "Wenn Sie damit fertig sind, klicken Sie auf \"Erzeugen\"."
+
+#~ msgid "There is already another truecrypt-helper "
+#~ msgstr ""
+#~ "Es läuft noch ein anderer Truecrypt-Prozess, bitte warten Sie bis er "
+#~ "abgeschlossen ist"
+
+#~ msgid "Convert to extended"
+#~ msgstr "In erw. konvertieren"
+
+#~ msgid "Converts to an extended volume"
+#~ msgstr "Konvertiert in einen erweiterten Container"
+
+#~ msgid "Check filesystem"
+#~ msgstr "Prüfe Dateisystem"
+
+#~ msgid "%(name)s (%(device)s) is possibly a truecrypt encrypted device.\n"
+#~ msgstr ""
+#~ "%(name)s (%(device)s) ist möglicherweise ein TrueCrypt-verschlüsselter "
+#~ "Datenträger.\n"
+
+#~ msgid "%(name)s (%(device)s) is a truecrypt encrypted backup device.\n"
+#~ msgstr ""
+#~ "%(name)s (%(device)s) ist ein TrueCrypt-verschlüsselter Backup-"
+#~ "Datenträger.\n"
+
+#~ msgid "Shall we try to open it?"
+#~ msgstr "Soll versucht werden ihn zu öffnen?"
+
+#~ msgid "TrueCrypt Device detected"
+#~ msgstr "TrueCrypt-Gerät erkannt"
+
+#~ msgid ""
+#~ "A system error occured. The error was\n"
+#~ "\n"
+#~ "%(error)s\n"
+#~ "\n"
+#~ "Local variables:\n"
+#~ "%(vars)s"
+#~ msgstr ""
+#~ "Ein Systemfehler ist aufgetreten. Der Fehler war\n"
+#~ "\n"
+#~ "%(error)s\n"
+#~ "\n"
+#~ "Lokale Variablen:\n"
+#~ "%(vars)s"
+
+#~ msgid "Do you want to da a backup?"
+#~ msgstr "Wollen Sie ihre Daten sichern?"
+
+#~ msgid ""
+#~ "It looks like you have a backup container/volume mounted at /media/"
+#~ "backup. Do you want to use it for a backup of your files in %s?"
+#~ msgstr ""
+#~ "Es scheint, als wäre bereits ein Backup-Container auf /media/backup "
+#~ "geöffnet. Soll er für eine Sicherung der Daten im Container %s verwendet "
+#~ "werden?"
+
+#~ msgid ""
+#~ "More than one possible backup container was found. Automatic backup "
+#~ "cannot continue. Please make sure only one container namend \"backup.tc\" "
+#~ "is located on any attached drive.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Es wurde mehr als ein möglicher Backup-Container gefunden. Das "
+#~ "automatische Backup kann nicht ausgeführt werden. Bitte stellen Sie "
+#~ "sicher, dass nur ein Container mit Namen \"backup.tc\" auf allen "
+#~ "angeschlossenen Laufwerken existiert.\n"
+#~ "\n"
+
+#~ msgid ""
+#~ "%(backupname)s looks like an encrypted backup container. Do you want to "
+#~ "use it for a backup of your files in %(origname)s? If you answer with \"OK"
+#~ "\", you will have to enter the password for %(backupname)s in the next "
+#~ "step."
+#~ msgstr ""
+#~ "%(backupname)s scheint ein verschlüsselter Backup-Container zu sein. Soll "
+#~ "er für eine Sicherung der Daten im Container %(origname)s verwendet "
+#~ "werden? Wenn Sie mit \"OK\" antworten, müssen Sie im nächsten Schritt das "
+#~ "Passwort für den Container %(backupname)s eingeben"
+
+#~ msgid ""
+#~ "%(backupname)s is not an \"extended truecrypt volume\" and can therefore "
+#~ "not be used for a backup.\n"
+#~ "Please convert %(backupname)s to an \"extended Volume\" or create a new, "
+#~ "ext3 formatted backup volume with name backup.tc."
+#~ msgstr ""
+#~ "%(backupname)s ist kein \"erweiterter Truecrypt-Container\" und kann "
+#~ "deshalb nicht für ein Backup verwendet werden.\n"
+#~ "Bitte konvertieren Sie %(backupname)s zu einem \"erweiterten Truecrypt-"
+#~ "Container\" oder legen Sie einen neuen, ext3-formatierten Backup-"
+#~ "Container mit dem Namen backup.tc an."
+
+#~ msgid "Unmounting"
+#~ msgstr "Aushängen"
+
+#~ msgid "Please wait until all data has been written to disk..."
+#~ msgstr "Bitte warten, bis alle Daten auf Datenträger geschrieben wurden..."
+
+#~ msgid ""
+#~ "An error occured during backup!\n"
+#~ "Could not create target directory."
+#~ msgstr ""
+#~ "Beim Backup ist ein Fehler aufgetreten!\n"
+#~ "Konnte Zielverzeichnis nicht erstellen."
+
+#~ msgid ""
+#~ "An error occured during backup. Error occured while executing gtkrsync!"
+#~ msgstr ""
+#~ "Beim Backup ist ein Fehler aufgetreten!\n"
+#~ "Ein Fehler trat auf beim Ausführen von gtkrsync!"
+
+#~ msgid "Could not delete incomplete backup at %s"
+#~ msgstr "Konnte unvollständiges Backup auf %s nicht löschen"
+
+#~ msgid "Cleaning up"
+#~ msgstr "Aufräumen"
+
+#~ msgid "Old backups are being cleaned up, please wait..."
+#~ msgstr "Alte Backups werden aufgeräumt, bitte warten..."
+
+#~ msgid "Could not delete old backup at %s"
+#~ msgstr "Konnte altes Backup auf %s nicht löschen"
+
+#~ msgid "Backup done."
+#~ msgstr "Backup abgeschlossen."
+
+#~ msgid "Backup of %s successful."
+#~ msgstr "Backup von %s erfolgreich."
+
+#~ msgid ""
+#~ "An error occured during backup!\n"
+#~ "Maybe there is not enough space at the destination."
+#~ msgstr ""
+#~ "Beim Backup ist ein Fehler aufgetreten!\n"
+#~ "Eventuell ist am Ziel nicht genügend Platz."
+
+#~ msgid "Backup other containers?"
+#~ msgstr "Andere Container sichern?"
+
+#~ msgid ""
+#~ "You can now backup your other open containers as well. Their contents "
+#~ "will be stored within the same backup container, but in a separate "
+#~ "directory. Do you want to do this now?\n"
+#~ "\n"
+#~ "Hint: The backup container has %s free space."
+#~ msgstr ""
+#~ "Sie können jetzt auch andere geöffnete Container mit sichern. Ihr Inhalt "
+#~ "wird im gleichen Backup-Container, aber in einem extra Ordner "
+#~ "gespeichert. Wollen Sie das jetzt tun?\n"
+#~ "\n"
+#~ "Hinweis: Der Backup-Container hat noch %s frei."
+
+#~ msgid ""
+#~ "Failed to stop evolution, will skip loading evolution data from the "
+#~ "extended container!"
+#~ msgstr ""
+#~ "Konnte Evolution nicht anhalten, überspringe das Laden der Evolution-"
+#~ "Daten vom erweiterten Container!"
+
+#~ msgid ""
+#~ "Multiple virtual machines were found on %s, don't know which one to "
+#~ "start. Please start it manually."
+#~ msgstr ""
+#~ "Mehrere virtuelle Maschinen wurden auf %s gefunden, weiss nicht welche "
+#~ "gestartet werden soll. Bitte manuell starten."
+
+#~ msgid "Start Virtual Machine?"
+#~ msgstr "Virtuelle Maschine starten?"
+
+#~ msgid ""
+#~ "A virtual machine named \n"
+#~ "%s\n"
+#~ " was found. Do you want to start it?"
+#~ msgstr ""
+#~ "Eine virtuelle Maschine namens\n"
+#~ "%s\n"
+#~ "wurde gefunden. Soll sie gestartet werden?"
+
+#~ msgid ""
+#~ "An error occured trying to start the virtual machine:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Ein Fehler trat auf beim Versuch, die virtuelle Maschine:\n"
+#~ "%s\n"
+#~ "zu starten."
+
+#~ msgid ""
+#~ "You seem to be opening this extended container for the first time with "
+#~ "this version. Please be aware of the following:\n"
+#~ "* Evolution data cannot be migrated. Please open with the old version "
+#~ "instead, make a data backup within evolution and restore it using this "
+#~ "new version.\n"
+#~ "* The Hamster Time Tracking database will be converted and cannot be "
+#~ "opened with older versions afterwards.\n"
+#~ "* The password manager database will be converted and cannot be opened "
+#~ "with older versions afterwards.\n"
+#~ "* Some seahorse settings cannot be migrated and need tobe re-done. This "
+#~ "does not affect your keys or GnuPG settings.\n"
+#~ "* Beagle is not supported anymore, but its data will remain on the "
+#~ "container. You may manually delete the folder '.beagle'.\n"
+#~ "\n"
+#~ "\n"
+#~ "<b>Do you want to continue and open this extended container?</b>"
+#~ msgstr ""
+#~ "Sie öffnen diesen erweiterten Container offenbar zum ersten Mal mit "
+#~ "dieser Version. Bitte beachten Sie folgendes:\n"
+#~ "* Evolution-Daten können nicht übernommen werden. Bitte statt dessen mit "
+#~ "der alten Version öffnen, in Evolution eine Datensicherung durchführen "
+#~ "und diese in der neuen Version importieren.\n"
+#~ "* Die Hamster Zeiterfassungs-Datenbank wird konvertiert und kann danach "
+#~ "mit älteren Versionen u.U. nicht mehr geöffnet werden.\n"
+#~ "* Die Passwort-Manager-Datenbank wird konvertiert und kann danach mit "
+#~ "älteren Versionen u.U. nicht mehr geöffnet werden.\n"
+#~ "* Einige Einstellungen der Schlüsselverwaltung Seahorse können nicht "
+#~ "übernommen werden. Dies betrifft nicht die Schlüssel oder GnuPG-"
+#~ "Einstellungen.\n"
+#~ "* Beagle Volltextsuche wird nicht mehr unterstützt, aber die Daten "
+#~ "verbleiben im Container. Sie können den Ordner \".beagle\" manuell "
+#~ "löschen.\n"
+#~ "\n"
+#~ "\n"
+#~ "<b>Wollen Sie fortfahren und diesen erweiterten Container öffnen?</b>"
+
+#~ msgid "New Version"
+#~ msgstr "Neue Version"
+
+#~ msgid ""
+#~ "Either %s is not an extended volume, or there is already another extended "
+#~ "volume mounted. There can only be one extended volume mounted at a time."
+#~ msgstr ""
+#~ "Entweder ist %s kein erweiterter Container, oder es ist bereits ein "
+#~ "anderer erweiterter Container eingehängt. Es kann immer nur ein "
+#~ "erweiterter Container gleichzeitig eingehängt sein."
+
+#~ msgid "Low free space"
+#~ msgstr "Wenig freier Speicherplatz"
+
+#~ msgid ""
+#~ "There are only %(freebytes)s free on %(volume)s. This may cause problems "
+#~ "when using it as an extended volume. You should stop now, free some space "
+#~ "and then try re-opening this as an extended volume again.\n"
+#~ "\n"
+#~ "Stop now?"
+#~ msgstr ""
+#~ "Es sind nur noch %(freebytes)s frei auf %(volume)s. Das kann Probleme "
+#~ "verursachen beim Verwenden als erweiterter Container. Sie sollten jetzt "
+#~ "abbrechen, etwas Speicherplatz schaffen und den Container erneut als "
+#~ "erweiterten öffnen.\n"
+#~ "\n"
+#~ "Jetz abbrechen?"
+
+#~ msgid "Please wait..."
+#~ msgstr "Bitte warten..."
+
+#~ msgid "Extended volume is being opened, please wait!"
+#~ msgstr "Erweiterter Container wird geöffnet, bitte warten!"
+
+#~ msgid "Opening successful"
+#~ msgstr "Öffnen erfolgreich"
+
+#~ msgid "Extended truecrypt volume %s opened successfully."
+#~ msgstr "Erweiterter Container %s wurde erfolgreich geöffnet."
+
+#~ msgid ""
+#~ "There are still open files on %s, listed below. Please close them first.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Es sind noch Dateien auf %s geöffnet, die unten aufgelistet sind.Bitte "
+#~ "diese zuerst schließen und erneut versuchen.\n"
+#~ "\n"
+
+#~ msgid "Extended volume is being closed, please wait!"
+#~ msgstr "Erweiterter Container wird geschlossen, bitte warten!"
+
+#~ msgid "Opening TrueCrypt volume"
+#~ msgstr "Öffne TrueCrypt-Container"
+
+#~ msgid "TrueCrypt Volume is being opened, please wait..."
+#~ msgstr "TrueCrypt Container wird geöffnet, bitte warten..."
+
+#~ msgid ""
+#~ "Failed to detect a valid filesystem on %s. The volume may be damaged or "
+#~ "unformatted."
+#~ msgstr ""
+#~ "Es wurde kein gültiges Dateisystem auf %s erkannt. Das Volume könnte "
+#~ "beschädigt sein oder unformatiert."
+
+#~ msgid "Checking filesystem"
+#~ msgstr "Prüfe Dateisystem"
+
+#~ msgid "Doing a quick filesystem check on %s"
+#~ msgstr "Führe eine kurze Dateisystem-Prüfung auf %s aus"
+
+#~ msgid "Checking filesystem on %s..."
+#~ msgstr "Prüfe Dateisystem auf %s..."
+
+#~ msgid ""
+#~ "The filesystem on %s is being checked and, if neccessary, repaired.\n"
+#~ "This may take a while, please be patient."
+#~ msgstr ""
+#~ "Das Dateisystem auf %s wird geprüft und, falls notwendig, repariert.\n"
+#~ "Das kann eine Weile dauern, bitte Geduld."
+
+#~ msgid "Filesystem check on %s failed. Try to check and repair the volume."
+#~ msgstr ""
+#~ "Dateisystem-prüfung auf %s war nicht erfolgreich. Versuchen Sie, das "
+#~ "Volume zu prüfen und reparieren."
+
+#~ msgid "Failed to mount the volume. Try to check and repair the volume."
+#~ msgstr ""
+#~ "Fehler beim Einhängen des Volumes. Versuchen Sie, das Volume zu prüfen "
+#~ "und reparieren."
+
+#~ msgid "Extended volume"
+#~ msgstr "Erweiterter Container"
+
+#~ msgid ""
+#~ "This appears to be an extended TrueCrypt Volume. Do you want to make use "
+#~ "of the settings stored therein?"
+#~ msgstr ""
+#~ "Dies scheint ein erweiterter Container zu sein. Wollen Sie die darin "
+#~ "gespeicherten Einstellungen verwenden?"
+
+#~ msgid "TrueCrypt volume %s was opened successfully"
+#~ msgstr "TrueCrypt-Container %s wurde erfolgreich geöffnet"
+
+#~ msgid "Closing TrueCrypt volume"
+#~ msgstr "Schließe TrueCrypt Container"
+
+#~ msgid "TrueCrypt volume is being closed, please wait..."
+#~ msgstr "TrueCrypt Container wird geschlossen, bitte warten..."
+
+#~ msgid "Specified mountpoint does not exist (anymore?)"
+#~ msgstr "Der angegebene Mountpunkt existiert nicht (mehr?)"
+
+#~ msgid "There is no truecrypt volume mounted at %s."
+#~ msgstr "Es ist kein Truecrypt-Container auf %s eingehängt."
+
+#~ msgid ""
+#~ "There are active network connections to this volume from the machines "
+#~ "listed below, which need to be closed\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Es sind noch Netzwerkverbindungen aktiv von folgenden Rechnern, die erst "
+#~ "geschlossen werden müssen.\n"
+#~ "\n"
+
+#~ msgid "Empty trash"
+#~ msgstr "Mülleimer leeren"
+
+#~ msgid ""
+#~ "There are items in the trash on %s. Do you want to empty the trash before "
+#~ "unmounting?"
+#~ msgstr ""
+#~ "Es sind noch Dateien im Mülleimer auf %s. Soll der Mülleimer vor dem "
+#~ "Aushängen geleert werden?"
+
+#~ msgid "Closing done"
+#~ msgstr "Schließen abgeschlossen"
+
+#~ msgid ""
+#~ "WARNING: This will open a terminal where you can continue the repair "
+#~ "process yourself. Be sure you know what you are doing."
+#~ msgstr ""
+#~ "ACHTUNG: Dies öffnet ein Terminal, in dem Sie den Reparaturprozess "
+#~ "manuell fortführen können. Sie sollten wissen, was Sie tun."
+
+#~ msgid "Normal"
+#~ msgstr "Normal"
+
+#~ msgid "Interactive repair"
+#~ msgstr "Interaktive Reparatur"
+
+#~ msgid "Mode of operation:"
+#~ msgstr "Reparatur-Modus:"
+
+#~ msgid "Make a copy"
+#~ msgstr "Eine Kopie erstellen"
+
+#~ msgid ""
+#~ "It is recommended to make a copy of your device before doing this. Do you "
+#~ "want to make a copy now? Insert an empty destination drive before "
+#~ "clicking \"Yes\""
+#~ msgstr ""
+#~ "Es wird empfohlen, vor dieser Aktion eine Kopie des Mediums zu erstellen. "
+#~ "Wollen Sie das jetzt tun? Schließen Sie ein Zielmedium an, bevor Sie \"Ja"
+#~ "\" klicken."
+
+#~ msgid "Filesystem check"
+#~ msgstr "Dateisystemprüfung"
+
+#~ msgid "No errors were found during this check."
+#~ msgstr "Es wurden keine Fehler bei dieser Prüfung gefunden"
+
+#~ msgid "Errors were found and repaired during this check."
+#~ msgstr "Es wurden Fehler gefunden und repariert."
+
+#~ msgid ""
+#~ "For some reason, filesystem check was not successful or did not complete."
+#~ msgstr ""
+#~ "Aus unbekannten Gründen war die Prüfung nicht erfolgreich oder konnte "
+#~ "nicht abgeschlossen werden."
+
+#~ msgid "Attention - loss of data!"
+#~ msgstr "Achtung - Datenverlust!"
+
+#~ msgid ""
+#~ "The volume will be formatted by this command. Thereby you will lose all "
+#~ "data within this volume. Do you want to continue?"
+#~ msgstr ""
+#~ "Der Container wird durch diesen Befehl formatiert. Dabei gehen alle "
+#~ "eventuell darin enthaltenen Daten verloren. Wollen Sie fortfahren?"
+
+#~ msgid "Formatting..."
+#~ msgstr "Formatiere..."
+
+#~ msgid "Formatting the volume, please wait..."
+#~ msgstr "Formatiere den Container, bitte warten..."
+
+#~ msgid "Conversion of %s was successful."
+#~ msgstr "Konvertierung von %s war erfolgreich"
+
+#~ msgid "Check _filesystem"
+#~ msgstr "Prüfe _Dateisystem"
+
+#~ msgid "_Cancel"
+#~ msgstr "_Abbrechen"
+
+#~ msgid "_Next"
+#~ msgstr "_Weiter"
+
+#~ msgid "_Previous"
+#~ msgstr "_Zurück"
+
+#~ msgid "TrueCrypt Wizard"
+#~ msgstr "TrueCrypt-Container Assistent"
+
+#~ msgid "Force-Unmount Container"
+#~ msgstr "Aushängen erzwingen"
+
+#~ msgid "Unmount Container"
+#~ msgstr "Container Aushängen"
+
+#~ msgid "The password contains unallowed characters. Allowed cahracters are:"
+#~ msgstr "Das Passwort "
+
+#~ msgid "Forcibly unmounts the current volume"
+#~ msgstr "Erzwingt das aushängen dieses Volumes"
+
+#~ msgid ""
+#~ "A system error occured. The error was\n"
+#~ "\n"
+#~ "<i>%s</i>\n"
+#~ "\n"
+#~ "<small>Local variables:\n"
+#~ "%s</small>"
+#~ msgstr ""
+#~ "Ein Systemfehler ist aufgetreten. Der Fehler war\n"
+#~ "\n"
+#~ "<i>%s</i>\n"
+#~ "\n"
+#~ "<small>Lokale Variablen:\n"
+#~ "%s</small>"
+
+#~ msgid ""
+#~ "Closing was only partially successful. You should reboot your machine as "
+#~ "soon as possible to avoid problems."
+#~ msgstr ""
+#~ "Schließen war nur teiwleise erfolgreich. Sie sollten den Computer so bald "
+#~ "wie möglich neu starten, um Probleme zu vermeiden."
+
+#~ msgid "%s (%s) is possibly a truecrypt encrypted device, try to open it?"
+#~ msgstr ""
+#~ "%s (%s) ist möglicherweise TrueCrypt-verschlüsselt, soll versucht werden "
+#~ "es zu öffnen?"
+
+#~ msgid "Partitioning device..."
+#~ msgstr "Gerät wird partitioniert..."

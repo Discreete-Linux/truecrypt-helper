@@ -1,0 +1,25 @@
+Source: truecrypt-helper
+Section: utils
+Priority: extra
+Maintainer: Discreete Linux Team <info@discreete-linux.org>
+Build-Depends: debhelper (>= 9), dh-python
+Standards-Version: 3.9.5
+Homepage: https://www.discreete-linux.org
+
+Package: truecrypt-helper
+Architecture: all
+Depends: ${misc:Depends}, util-linux, python, nemo-python, python-notify, python-daemon, 
+ python-parted, secure-delete, dosfstools, ntfs-3g, mtools, xterm, 
+ gir1.2-notify-0.7, python-pyudev, lsof, exfat-utils
+Recommends: extended-volume-manager
+Suggests: cryptsetup
+Description: Helpers for Truecrypt/VeraCrypt
+ truecrypt-helper provides helper functions for dealing with truecrypt volumes:
+ * Open Volumes by double-clicking or via context menu, unmount them like
+ removable drives in nemo. Mounts the volumes by label instead of
+ "truecryptX".
+ * umount enhancement, checks for open volumes on unplugged
+ removables and closes them
+ * force-dismount nemo extension
+ * Check container filesystem
+ * Wipe free space (on any volume, not just truecrypt volumes)

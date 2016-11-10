@@ -1,0 +1,10 @@
+[Desktop Entry]
+Exec=/usr/bin/tc-device-rescan.py
+Icon=truecrypt-wizard
+Name=Scan for TrueCrypt Volumes
+Comment=Scans for already connected but not yet mounted TrueCrypt Volumes
+Terminal=false
+Type=Application
+Version=1.0
+Categories=Security;System;
+X-Ubuntu-Gettext-Domain=truecrypt-helper

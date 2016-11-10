@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-truecrypt-volume">
+    <comment>encrypted Truecrypt container file</comment>
+    <comment xml:lang="de">verschlüsselter Truecrypt-Container</comment>
+    <glob pattern="*.tc"/>
+  </mime-type>
+  <mime-type type="application/x-veracrypt-volume">
+    <comment>encrypted VeraCrypt container file</comment>
+    <comment xml:lang="de">verschlüsselter VeraCrypt-Container</comment>
+    <glob pattern="*.hc"/>
+  </mime-type>
+</mime-info>

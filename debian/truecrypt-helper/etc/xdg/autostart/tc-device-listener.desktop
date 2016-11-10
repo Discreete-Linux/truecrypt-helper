@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Exec=tc-device-listener.py
+Name=TrueCrypt helper device listener
+Comment=Listens for USB devices which could be TrueCrypt encrypted devices
+Terminal=false
+Type=Application
+StartupNotify=false
+X-GNOME-Autostart-Phase=Applications
+X-Ubuntu-Gettext-Domain=truecrypt-helper

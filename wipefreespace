@@ -1,0 +1,133 @@
+#!/usr/bin/env python
+
+import os
+import subprocess
+import gettext
+import time
+import sys
+import traceback
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GObject, Notify
+
+import truecrypthelper
+
+class MyWipe:
+    def __init__(self):
+        self.files = sys.argv[1:]
+        if len(self.files) > 1:
+            truecrypthelper.show_error(_("This script does not work with multiple "
+                                         "files selected. Please try again."))
+            exit(0)
+        self.filename = self.files[0]
+        while not os.path.ismount(self.filename):
+            self.filename = os.path.split(self.filename)[0]
+        gettext.install("truecrypt-helper", unicode=1)
+        Notify.init("truecrypt-helper")
+
+    def delete_event(self, widget, event, data=None):
+        if self.cancel_wipe():
+            return True
+        else:
+            return False
+
+    def destroy(self, widget, data=None):
+        Gtk.main_quit()
+
+    def timeout_callback(self):
+        self.pbar.pulse()
+        return True
+
+    def cancel_wipe(self, data=None):
+        warning=Gtk.MessageDialog(buttons=Gtk.ButtonsType.YES_NO, type=Gtk.MessageType.QUESTION)
+        warning.set_markup(_("Do you really want to stop the wiping process? This "
+                             "may leave data fragments with random names behind, "
+                             "which can be safely deleted."))
+        warning.set_default_response(Gtk.ResponseType.NO)
+        response = warning.run()
+        if ( response == Gtk.ResponseType.NO ) or ( response == Gtk.ResponseType.DELETE_EVENT ):
+            warning.destroy()
+            return True
+        if (self.command.poll() is None):
+            subprocess.call(["/usr/bin/sudo", "/usr/bin/killall", "-9", "sfill"])
+            while (self.command.poll() is None):
+                time.sleep(1)
+        warning.destroy()
+        self.window.destroy()
+        return False
+
+    def check_result(self, widget, data=None):
+        self.window.destroy()
+        self.command.wait()
+        retval = self.command.returncode
+        if retval == 0:
+            p = Notify.Notification(_("Wiping done"),
+                                    _("Wiping free space on %s has successfully completed") %
+                                       self.filename)
+            p.show()
+        else:
+            warning=Gtk.MessageDialog(buttons=Gtk.ButtonsType.OK, type=Gtk.MessageType.WARNING)
+            warning.set_markup(_("Wiping was not sucessful. The errorcode returned was %s" % retval))
+            warning.run()
+            warning.destroy()
+        self.destroy(self, widget)
+        return True
+
+    def main(self):
+        confirm = Gtk.MessageDialog(buttons=Gtk.ButtonsType.OK_CANCEL, type=Gtk.MessageType.QUESTION)
+        confirm.set_markup(_("This will overwrite once the free space on the filesystem \n"
+                             "<i>%s</i>\nonce with random data.\n\nNote that this\n"
+                             "a) May still leave small parts of data recoverable due to wear leveling mechanisms\n"
+                             "b) May shorten the life of flash media if used extensively.\n"
+                             "c) May leave meaningless data files on your drive if cancelled. "
+                             "These can be safely deleted.\n\
+\nClick OK to continue.") % self.filename)
+        confirm.set_default_response(Gtk.ResponseType.OK)
+        passes=Gtk.CheckButton(label=_("_Multiple passes (for floppies)"), use_underline=True)
+        confirm.vbox.pack_start(passes, True, True, 0)
+        passes.show()
+        response = confirm.run()
+        if ( response == Gtk.ResponseType.CANCEL ) or ( response == Gtk.ResponseType.DELETE_EVENT ):
+            confirm.destroy()
+            exit(0)
+        multi = passes.get_active()
+        confirm.destroy()
+        self.window = Gtk.Window()
+        self.window.connect("delete_event", self.delete_event)
+        self.window.connect("destroy", self.destroy)
+        self.window.set_title(_("Wiping free space on %s...") % self.filename.decode('UTF-8', 'replace'))
+        self.window.set_border_width(10)
+        self.window.set_position(Gtk.WindowPosition.CENTER)
+        vbox=Gtk.VBox(spacing=10)
+        message=Gtk.Label(label=_("Wiping free space on %s. This may take some time") % self.filename.decode('UTF-8', 'replace'))
+        vbox.pack_start(message, True, True, 0)
+        self.pbar=Gtk.ProgressBar()
+        self.pbar.set_text(_("Wiping..."))
+        self.pbar.set_pulse_step(0.01)
+        vbox.pack_start(self.pbar, True, True, 0)
+        hbox=Gtk.HBox()
+        cbutton=Gtk.Button(stock=Gtk.STOCK_CANCEL)
+        cbutton.connect("clicked", self.cancel_wipe)
+        hbox.pack_end(cbutton, False, False, 0)
+        vbox.pack_start(hbox, True, True, 0)
+        self.window.add(vbox)
+        hbox.show()
+        vbox.show()
+        self.maintimer=GObject.timeout_add(20, self.timeout_callback)
+        try:
+            if multi:
+                self.command=subprocess.Popen(["/usr/bin/sudo", "/usr/bin/sfill", "-I", "-l", "-z", self.filename], stdout=subprocess.PIPE)
+            else:
+                self.command=subprocess.Popen(["/usr/bin/sudo", "/usr/bin/sfill", "-I", "-l", "-l", "-z", self.filename], stdout=subprocess.PIPE)
+        except OSError:
+            truecrypthelper.show_error(_("An error occured while trying to execute the wiping programm. The error was\n\
+<i>%s</i>") % traceback.format_exc())
+            exit(1)
+        source_id = GObject.io_add_watch(self.command.stdout, GObject.IO_HUP, self.check_result)
+        self.window.show_all()
+        Gtk.main()
+
+if __name__== "__main__":
+    mywipe = MyWipe()
+    mywipe.main()
+

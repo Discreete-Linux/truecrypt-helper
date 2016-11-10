@@ -1,0 +1,3 @@
+/etc/polkit-1/localauthority/50-local.d/org.privacy-cd.desktop.pkla
+/etc/sudoers.d/truecrypt-helper-sudo
+/etc/xdg/autostart/tc-device-listener.desktop
