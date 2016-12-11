@@ -45,7 +45,7 @@ class TrueCryptWizard(Gtk.Assistant):
         self.mode = ""
         self.size = Gtk.Adjustment()
         self.password = ""
-        self.encryptionAlgorithm = "Serpent-AES"
+        self.encryptionAlgorithm = "AES"
         self.hashAlgorithm = "SHA-512"
         self.getGUID()
         self.setupScreen0()
