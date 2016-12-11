@@ -8,9 +8,9 @@ Homepage: https://www.discreete-linux.org
 
 Package: truecrypt-helper
 Architecture: all
-Depends: ${misc:Depends}, util-linux, python, nemo-python, python-notify, python-daemon, 
+Depends: ${misc:Depends}, util-linux, python, nemo-python, python-daemon, 
  python-parted, secure-delete, dosfstools, ntfs-3g, mtools, xterm, 
- gir1.2-notify-0.7, python-pyudev, lsof, exfat-utils
+ gir1.2-notify-0.7, gir1.2-udisks-2.0, python-pyudev, lsof, exfat-utils
 Recommends: extended-volume-manager
 Suggests: cryptsetup
 Description: Helpers for Truecrypt/VeraCrypt

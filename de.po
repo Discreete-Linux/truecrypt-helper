@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: truecrypt-helper 0.8\n"
 "Report-Msgid-Bugs-To: info@discreete-linux.org\n"
-"POT-Creation-Date: 2016-11-02 13:41+0100\n"
-"PO-Revision-Date: 2016-11-02 13:48+0100\n"
-"Last-Translator: UPR Team <info@privacy-cd.org>\n"
+"POT-Creation-Date: 2016-12-07 09:47+0100\n"
+"PO-Revision-Date: 2016-12-07 09:55+0100\n"
+"Last-Translator: Discreete Linux Team <info@discreete-linux.org>\n"
 "Language-Team: LANGUAGE <de@li.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -17,87 +17,103 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: tc-open:14 tc-close:14 tc-check:14
+#: luks-open:17
+msgid "Need to specify a regular file or block device!"
+msgstr "Es muss eine normale Datei oder Blockdatei angegeben werden!"
+
+#: tc-open:14 tc-close:14 tc-check:14 vc-open:14
 msgid "Too many arguments."
 msgstr "Zu viele Parameter"
 
-#: tc-wizard:30
-msgid "VeraCrypt Volume Wizard"
-msgstr "VeraCrypt Container Assistent"
+#: tc-wizard:31
+msgid "CryptoBox Wizard"
+msgstr "CryptoBox Assistent"
 
-#: tc-wizard:108
+#: tc-wizard:119
 msgid "Basic Settings"
 msgstr "Grundeinstellungen"
 
-#: tc-wizard:109
+#: tc-wizard:120
 msgid "Create an _extended volume"
 msgstr "Einen _erweiterten Container erzeugen"
 
-#: tc-wizard:110
+#: tc-wizard:121
 msgid "Create a volume for automatic _backups"
 msgstr "Einen Container für automatische Daten_sicherung erzeugen"
 
-#: tc-wizard:111
+#: tc-wizard:122
 msgid "Create a container _file"
 msgstr "Eine _Container-Datei erzeugen"
 
-#: tc-wizard:112
+#: tc-wizard:123
 msgid "Use an entire _data medium for created volume"
 msgstr "Einen ganzen _Datenträger für das erzeugte Volumen benutzen"
 
-#: tc-wizard:145
+#: tc-wizard:124
+msgid "Use free space on _boot medium for created volume"
+msgstr "Freien Platz auf dem _Start-Datenträger für das Volume benutzen."
+
+#: tc-wizard:125
+msgid "Encryption format:"
+msgstr "Verschlüsselungs-Format:"
+
+#: tc-wizard:179
 msgid "Volume _label:"
 msgstr "Volumen-Kennung:"
 
-#: tc-wizard:146
+#: tc-wizard:180
 msgid "Container _size:"
 msgstr "Container-Größe:"
 
-#: tc-wizard:147
+#: tc-wizard:181
 msgid "Volume Selection"
 msgstr "Container-Auswahl"
 
-#: tc-wizard:199
+#: tc-wizard:235
 msgid "_Container file:"
 msgstr "_Container-Datei:"
 
-#: tc-wizard:200
+#: tc-wizard:236
 msgid "_Browse"
 msgstr "_Suchen"
 
-#: tc-wizard:224
+#: tc-wizard:260
 msgid "_Data medium:"
 msgstr "_Datenträger:"
 
-#: tc-wizard:244
+#: tc-wizard:280
+msgid "Boot medium:"
+msgstr "Start-Datenträger:"
+
+#: tc-wizard:294
 msgid "Encryption options"
 msgstr "Verschlüsselungsoptionen"
 
-#: tc-wizard:245
+#: tc-wizard:295
 msgid "_Password:"
 msgstr "_Passwort:"
 
-#: tc-wizard:246
+#: tc-wizard:296
 msgid "_Confirm password:"
 msgstr "Passwort_bestätigung:"
 
-#: tc-wizard:247
+#: tc-wizard:297
 msgid "_Encryption algorithm:"
 msgstr "_Verschlüsselungs-Algorithmus:"
 
-#: tc-wizard:248
+#: tc-wizard:298
 msgid "_Hash algorithm:"
 msgstr "_Hash-Algorithmus:"
 
-#: tc-wizard:249
+#: tc-wizard:299
 msgid "_Display password"
 msgstr "Passwort _anzeigen"
 
-#: tc-wizard:330
+#: tc-wizard:380
 msgid "Volume Creation"
 msgstr "Container-Erzeugung"
 
-#: tc-wizard:331
+#: tc-wizard:381
 msgid ""
 "IMPORTANT: Move the mouse for about a minute as randomly as possible. This "
 "enhances the cryptographic strength of the encryption. When you are done "
@@ -107,39 +123,47 @@ msgstr ""
 "Das erhöht die kryptografische Stärke der Verschlüsselung. Wenn Sie damit "
 "fertig sind, klicken Sie auf \"Erzeugen\"."
 
-#: tc-wizard:335
+#: tc-wizard:385
 msgid "_Generate"
 msgstr "_Erzeugen"
 
-#: tc-wizard:336
+#: tc-wizard:386
 msgid "_Stop"
 msgstr "_Stop"
 
-#: tc-wizard:389
+#: tc-wizard:434
+msgid ""
+"There already is a data partition on the boot device. If you continue, all "
+"data on it will be deleted!"
+msgstr ""
+"Es gibt bereits eine Datenpartition auf dem Start-Datenträger. Wenn Sie "
+"fortfahren, werden alle Daten darauf gelöscht!"
+
+#: tc-wizard:448
 msgid "All data on the data medium will be lost!\n"
 msgstr "Alle Daten auf dem Datenträger gehen verloren!\n"
 
-#: tc-wizard:390
+#: tc-wizard:449
 msgid "Are you sure you want to encrypt this data medium?"
 msgstr "Sind Sie sicher, dass Sie diesen Datenträger verschlüsseln wollen?"
 
-#: tc-wizard:413
+#: tc-wizard:472
 msgid "Container Selection"
 msgstr "Container-Auswahl"
 
-#: tc-wizard:414
-msgid "TrueCrypt files"
-msgstr "TrueCrypt Dateien"
+#: tc-wizard:473
+msgid "Container files"
+msgstr "Container-Dateien"
 
-#: tc-wizard:415
+#: tc-wizard:474
 msgid "All files"
 msgstr "Alle Dateien"
 
-#: tc-wizard:447
+#: tc-wizard:507
 msgid "Overwrite existing?"
 msgstr "Existierenden überschreiben?"
 
-#: tc-wizard:448
+#: tc-wizard:508
 msgid ""
 "A backup container already exists at that location. Do you want to overwrite "
 "it?"
@@ -147,81 +171,122 @@ msgstr ""
 "Es existiert bereits ein Backup-Container an diesem Ort. Soll er "
 "überschrieben werden?"
 
-#: tc-wizard:488
+#: tc-wizard:558
 msgid "Generating volume..."
 msgstr "Volumen wird erzeugt..."
 
-#: tc-wizard:498
+#: tc-wizard:578
 msgid "Do you really want to stop volume creation?\n"
 msgstr "Wollen Sie wirklich die Erzeugung des Volumens stoppen?\n"
 
-#: tc-wizard:500
+#: tc-wizard:580
 msgid "The data medium becomes unusable thereby."
 msgstr "Der Datenträger wird dadurch unbenutzbar."
 
-#: tc-wizard:502
+#: tc-wizard:582
 msgid "The container will be removed in doing that."
 msgstr "Der Container wird dabei wieder gelöscht."
 
-#: tc-wizard:515
+#: tc-wizard:596
 msgid "The process has just terminated.\n"
 msgstr "Der Prozess hat sich gerade beendet.\n"
 
-#: tc-wizard:516
+#: tc-wizard:597
 msgid "So we will continue."
 msgstr "Daher wird fortgefahren."
 
-#: tc-wizard:602
+#: tc-wizard:744
 #, python-format
 msgid "%s MB max."
 msgstr "%s MB max."
 
-#: tc-wizard:662
+#: tc-wizard:804
 msgid "Password check"
 msgstr "Passwort Prüfung"
 
-#: tc-wizard:663
+#: tc-wizard:805
 #, python-format
 msgid "The password must be at least %d characters long!"
 msgstr "Das Passwort muss mindestens %d Zeichen lang sein!"
 
-#: tc-wizard:664
+#: tc-wizard:806
 msgid "The password must contain at least one non-letter character!"
 msgstr ""
 "Das Passwort muss mindestens ein Zeichen enthalten, welches kein Buchstabe "
 "ist!"
 
-#: tc-wizard:665
+#: tc-wizard:807
 msgid "The password contains unallowed characters. Allowed characters are:"
 msgstr "Das Passwort enthält ungültige Zeichen. Erlaubte Zeichen sind:"
 
-#: tc-wizard:751
+#: tc-wizard:911
 msgid ""
 "Could not unmount device. Maybe there is an open TrueCrypt volume on it?"
 msgstr ""
 "Konnte das Gerät nicht aushängen. Möglicherweise ist noch ein TrueCrypt "
 "Volume darauf geöffnet?"
 
-#: tc-wizard:768
+#: tc-wizard:928
 #, python-format
 msgid ""
 "Could not partition device. The error returned was:\n"
 "%s"
 msgstr "Konnte das Gerät nicht partitionieren. Der Fehlercode war %s"
 
-#: tc-wizard:853 tc-wizard:917
+#: tc-wizard:967 tc-wizard:974 tc-wizard:977 tc-wizard:982 tc-wizard:985
+msgid ""
+"Something went wrong trying to partition the boot device. Cannot continue.\n"
+msgstr ""
+"Ein Fehler trat auf beim Versuch, den Start-Datenträger zu partitionieren. "
+"Kann nicht fortfahren.\n"
+
+#: tc-wizard:968
+#, python-format
+msgid ""
+"Calculated start sector of %i was < 2048000, which is highly improbable."
+msgstr ""
+"Der berechnete Start-Sektor %i war kleiner als < 2048000, was sehr "
+"unwahrscheinlich ist."
+
+#: tc-wizard:978
+#, python-format
+msgid "Partitioning failed with error code %i"
+msgstr "Partitionieren schlug fehl mit Fehlercode %i"
+
+#: tc-wizard:986
+msgid "Could not find the partition which was just created."
+msgstr "Konnte die gerade erzeugte Partition nicht finden."
+
+#: tc-wizard:1017
+#, python-format
+msgid "Could not remove already existing file %s, cannot continue!"
+msgstr ""
+"Konnte die bereits existierende Datei %s nicht entfernen, kann nicht "
+"fortfahren!"
+
+#: tc-wizard:1026
+msgid "An error occured while trying to allocate the container file"
+msgstr ""
+"Ein Fehler trat auf beim Versuch, den Speicherplatz für den Container zu "
+"reservieren."
+
+#: tc-wizard:1044
+msgid "An error occured while trying to create the container!"
+msgstr "Ein Fehler trat auf beim Erstellen des Containers!"
+
+#: tc-wizard:1119 tc-wizard:1187
 msgid "Could not open Container"
 msgstr "Konnte Container nicht öffnen"
 
-#: tc-wizard:857 tc-wizard:921
+#: tc-wizard:1123 tc-wizard:1191
 msgid "Could not find device for Container"
 msgstr "Konnte kein Gerät zu diesem Container finden"
 
-#: tc-wizard:860
+#: tc-wizard:1128
 msgid "Could not create filesystem on Container"
 msgstr "Konnte kein Dateisystem auf dem Container anlegen"
 
-#: tc-wizard:905
+#: tc-wizard:1174
 #, python-format
 msgid ""
 "Could not unmount device. The error returned was:\n"
@@ -230,7 +295,7 @@ msgstr ""
 "Konnte das Gerät nicht aushängen. Der Fehlercode war:\n"
 "%i"
 
-#: tc-wizard:911
+#: tc-wizard:1180
 #, python-format
 msgid ""
 "Could not remove temp dir. The error returned was:\n"
@@ -238,24 +303,24 @@ msgid ""
 msgstr ""
 "Konnte das temporäre Verzeichnis nicht entfernen. Der Fehlercode war %s"
 
-#: tc-wizard:942
-msgid "The TrueCrypt volume has been successfully created.\n"
-msgstr "Das TrueCrypt Volumen wurde erfolgreich erzeugt.\n"
+#: tc-wizard:1214
+msgid "The encrypted volume has been successfully created.\n"
+msgstr "Das verschlüsselte Volumen wurde erfolgreich erzeugt.\n"
 
-#: tc-wizard:943
+#: tc-wizard:1215
 msgid "It may be used now."
 msgstr "Es kann jetzt benutzt werden."
 
-#: tc-wizard:950
-msgid "Error: Creating TrueCrypt volume failed."
-msgstr "Fehler: Das Erzeugen des TrueCrypt Volumens schlug fehl."
+#: tc-wizard:1221
+msgid "Error: Creating encrypted volume failed."
+msgstr "Fehler: Das Erzeugen des verschlüsselten Volumens schlug fehl."
 
-#: tc-wizard:952
+#: tc-wizard:1223
 #, python-format
 msgid "Error information: %s"
 msgstr "Fehlerinformation: %s"
 
-#: tc-wizard:1001
+#: tc-wizard:1268
 msgid ""
 "There is already another truecrypt-helper process running, please let it "
 "finish first."
@@ -347,55 +412,56 @@ msgstr ""
 "\n"
 "<i>%s</i>"
 
-#: truecrypt-helper.py:94
+#: truecrypt-helper.py:76
 msgid "An error occured!"
 msgstr "Ein Fehler ist aufgetreten"
 
-#: truecrypt-helper.py:141
-msgid "TrueCrypt-Container"
-msgstr "TrueCrypt-Container"
+#: truecrypt-helper.py:122
+msgid "VeraCrypt-Container"
+msgstr "VeraCrypt-Container"
 
-#: truecrypt-helper.py:142
-msgid "Treat this file as a truecrypt container"
-msgstr "Diese Datei als TrueCrypt-Container behandeln"
+#: truecrypt-helper.py:123
+msgid "Treat this file as a veracrypt container"
+msgstr "Diese Datei als VeraCrypt-Container behandeln"
 
-#: truecrypt-helper.py:147
+#: truecrypt-helper.py:128
 msgid "Open"
 msgstr "Öffnen"
 
-#: truecrypt-helper.py:148
-msgid "Tries to open the file as a TrueCrypt container"
-msgstr "Versucht, die Datei als TrueCrypt Container zu öffnen"
+#: truecrypt-helper.py:129
+msgid "Tries to open the file as a VeraCrypt container"
+msgstr "Versucht, die Datei als VeraCrypt Container zu öffnen"
 
-#: truecrypt-helper.py:151
+#: truecrypt-helper.py:132
 msgid "Check"
 msgstr "Prüfen"
 
-#: truecrypt-helper.py:152
+#: truecrypt-helper.py:133
 msgid "Checks the container filesystem"
 msgstr "Prüft das Dateisystem im Container"
 
-#: truecrypt-helper.py:158
+#: truecrypt-helper.py:139
 msgid "Unmount"
 msgstr "Aushängen"
 
-#: truecrypt-helper.py:159
-msgid "Unmounts the selected TrueCrypt Container"
-msgstr "Den ausgewählten TrueCrypt Container aushängen"
+#: truecrypt-helper.py:140
+msgid "Unmounts the selected TrueCrypt/VeraCrypt Container"
+msgstr "Den ausgewählten TrueCrypt/VeraCrypt Container aushängen"
 
-#: truecrypt-helper.py:162
+#: truecrypt-helper.py:143
 msgid "Force-Unmount"
 msgstr "Aushängen erzwingen"
 
-#: truecrypt-helper.py:163
-msgid "Forcibly Unmounts the selected TrueCrypt Container"
-msgstr "Den ausgewählten TrueCrypt Container erzwungenermaßen aushängen"
+#: truecrypt-helper.py:144
+msgid "Forcibly Unmounts the selected TrueCrypt/VeraCrypt Container"
+msgstr ""
+"Den ausgewählten TrueCrypt/VeraCrypt Container erzwungenermaßen aushängen"
 
-#: truecrypt-helper.py:169 truecrypt-helper.py:181
+#: truecrypt-helper.py:150 truecrypt-helper.py:162
 msgid "Wipe free space"
 msgstr "Freien Speicher wipen"
 
-#: truecrypt-helper.py:170 truecrypt-helper.py:182
+#: truecrypt-helper.py:151 truecrypt-helper.py:163
 msgid "Overwrites free space on the current location"
 msgstr "Überschreibt freien Speicherplatz am gegenwärtigen Ort."
 
@@ -421,18 +487,25 @@ msgstr ""
 "ACHTUNG: Dies aktiviert Reparaturen, die das Dateisystem im Falle eines "
 "Fehlschlags weiter beschädigen können"
 
-msgid "TrueCrypt helper device listener"
-msgstr "TrueCrypt Geräteerkennung"
+#~ msgid "VeraCrypt Volume Wizard"
+#~ msgstr "VeraCrypt Container Assistent"
 
-msgid "Listens for USB devices which could be TrueCrypt encrypted devices"
-msgstr "Sucht nach USB-Geräten, die TrueCrypt-verschlüsselt sein könnten."
+#~ msgid "TrueCrypt files"
+#~ msgstr "TrueCrypt Dateien"
 
-msgid "Scan for TrueCrypt Volumes"
-msgstr "Suche nach TrueCrypt-Volumes"
+#~ msgid "TrueCrypt helper device listener"
+#~ msgstr "TrueCrypt Geräteerkennung"
 
-msgid "Scans for already connected but not yet mounted TrueCrypt Volumes"
-msgstr ""
-"Sucht nach bereits angeschlossenen, aber nicht geöffneten TrueCrypt-Volumes"
+#~ msgid "Listens for USB devices which could be TrueCrypt encrypted devices"
+#~ msgstr "Sucht nach USB-Geräten, die TrueCrypt-verschlüsselt sein könnten."
+
+#~ msgid "Scan for TrueCrypt Volumes"
+#~ msgstr "Suche nach TrueCrypt-Volumes"
+
+#~ msgid "Scans for already connected but not yet mounted TrueCrypt Volumes"
+#~ msgstr ""
+#~ "Sucht nach bereits angeschlossenen, aber nicht geöffneten TrueCrypt-"
+#~ "Volumes"
 
 #~ msgid ""
 #~ "Please unmount TrueCrypt volumes using 'TrueCrypt-Container -> dismount' "
@@ -629,14 +702,6 @@ msgstr ""
 #~ "Eine virtuelle Maschine namens\n"
 #~ "%s\n"
 #~ "wurde gefunden. Soll sie gestartet werden?"
-
-#~ msgid ""
-#~ "An error occured trying to start the virtual machine:\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ein Fehler trat auf beim Versuch, die virtuelle Maschine:\n"
-#~ "%s\n"
-#~ "zu starten."
 
 #~ msgid ""
 #~ "You seem to be opening this extended container for the first time with "
@@ -885,9 +950,6 @@ msgstr ""
 
 #~ msgid "_Previous"
 #~ msgstr "_Zurück"
-
-#~ msgid "TrueCrypt Wizard"
-#~ msgstr "TrueCrypt-Container Assistent"
 
 #~ msgid "Force-Unmount Container"
 #~ msgstr "Aushängen erzwingen"

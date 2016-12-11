@@ -11,7 +11,8 @@ import re
 import syslog
 import stat
 from time import sleep
-from subprocess import Popen, PIPE
+from subprocess import call, Popen, PIPE
+from math import ceil
 import parted
 from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
 import truecrypthelper
@@ -23,11 +24,11 @@ pwNotAllAlpha = True
 pwLen = 20
 
 class TrueCryptWizard(Gtk.Assistant):
-    """ Class for creating VeraCrypt volumes """
+    """ Class for creating CryptoBox volumes """
     def __init__(self):
         """ Display dialog """
         super(TrueCryptWizard, self).__init__()
-        self.set_title(_("VeraCrypt Volume Wizard"))
+        self.set_title(_("CryptoBox Wizard"))
         self.icon_theme = Gtk.IconTheme.get_default()
         self.icon = self.icon_theme.load_icon("truecrypt-wizard", 24, 0)
         self.set_icon(self.icon)
@@ -38,6 +39,7 @@ class TrueCryptWizard(Gtk.Assistant):
         self.extended = True
         self.useBackup = False
         self.useDevice = False
+        self.useBootDevice = False
         self.volume = ""
         self.fsLabel = ""
         self.mode = ""
@@ -59,13 +61,19 @@ class TrueCryptWizard(Gtk.Assistant):
         """ Refresh screens. """
         if self.useDevice:
             self.contbox.hide()
+            self.bootbox.hide()
             self.devbox.show_all()
+        elif self.useBootDevice:
+            self.contbox.hide()
+            self.devbox.hide()
+            self.bootbox.show_all()
         else:
             self.devbox.hide()
+            self.bootbox.hide()
             self.contbox.show_all()
 
         sensitive = (self.size.get_value() != 0 and len(self.volume) > 0)
-        if self.useDevice and len(self.fsLabel) == 0:
+        if (self.useBootDevice or self.useDevice) and len(self.fsLabel) == 0:
             sensitive = False
         self.set_page_complete(self.screen1, sensitive)
 
@@ -84,18 +92,20 @@ class TrueCryptWizard(Gtk.Assistant):
         self.entry2.set_max_length(labelWidth)
         self.entry2.set_width_chars(labelWidth)
         self.entry2.set_text(self.fsLabel)
-        if self.useDevice and not self.useBackup:
+        if (self.useDevice or self.useBootDevice) and not self.useBackup:
             self.entry2.set_sensitive(True)
         else:
             self.entry2.set_sensitive(False)
 
-        if self.useDevice:
+        if self.useDevice or self.useBootDevice:
             self.spin0.set_sensitive(False)
         else:
             self.spin0.set_sensitive(True)
 
         if self.useDevice:
             self.checkDevice()
+        elif self.useBootDevice:
+            self.checkBootDevice()
         else:
             self.checkContainer()
 
@@ -111,6 +121,7 @@ class TrueCryptWizard(Gtk.Assistant):
         text1 = _("Create a volume for automatic _backups")
         text2 = _("Create a container _file")
         text3 = _("Use an entire _data medium for created volume")
+        text4 = _("Use free space on _boot medium for created volume")
         format_text = _("Encryption format:")
         self.screen0 = Gtk.VBox()
         self.chk0 = Gtk.CheckButton(label=text0)
@@ -131,19 +142,25 @@ class TrueCryptWizard(Gtk.Assistant):
         self.rad1.set_use_underline(True)
         self.rad1.set_active(self.useDevice)
         self.screen0.pack_start(self.rad1, False, False, 5)
+        self.rad2 = Gtk.RadioButton(group=self.rad0, label = text4)
+        self.rad2.set_use_underline(True)
+        self.rad2.set_active(self.useBootDevice)
+        self.rad2.set_sensitive(self.getBootDevice().startswith("/dev/sd"))
+        self.screen0.pack_start(self.rad2, False, False, 5)
         self.chk0.connect("toggled", self.onExtendedVolume)
         self.chk1.connect("toggled", self.onBackupVolume)
         self.rad0.connect("clicked", self.onDeviceVolume)
         self.rad1.connect("clicked", self.onDeviceVolume)
+        self.rad2.connect("clicked", self.onDeviceVolume)
         sep_format = Gtk.HSeparator()
         self.screen0.pack_start(sep_format, False, False, 10)
         self.hbox_format = Gtk.HBox()
         self.format_title = Gtk.Label(label=format_text)
         self.format_menu = Gtk.ComboBoxText()
+        self.format_menu.append_text("LUKS")
         if truecrypthelper.vc:
             self.format_menu.append_text("VeraCrypt")
         self.format_menu.append_text("TrueCrypt")
-        self.format_menu.append_text("LUKS")
         self.format_menu.set_active(0)
         self.mode = self.format_menu.get_active_text()
         self.format_menu.connect("changed", self.onModeChange)
@@ -179,6 +196,8 @@ class TrueCryptWizard(Gtk.Assistant):
         self.screen1.pack_start(self.contbox, False, False, 0)
         self.devbox = self.deviceBox()
         self.screen1.pack_start(self.devbox, False, False, 0)
+        self.bootbox = self.bootDeviceBox()
+        self.screen1.pack_start(self.bootbox, False, False, 0)
         sep0 = Gtk.HSeparator()
         self.screen1.pack_start(sep0, False, False, 10)
         hbox1 = Gtk.HBox(homogeneous=False, spacing=10)
@@ -255,7 +274,21 @@ class TrueCryptWizard(Gtk.Assistant):
         combo.connect("changed", self.onVolumeChange)
         self.blockVolumeChange = False
         return vbox
-        
+       
+    def bootDeviceBox(self):
+        """ Read-only label displaying the boot drive """
+        text0 = _("Boot medium:")
+        bootdev = parted.Device(self.getBootDevice())
+        text1 = "%s (%s, %.1f MB)" % (bootdev.model, bootdev.path, bootdev.getSize("MB")) 
+        vbox = Gtk.VBox()
+        hbox0 = Gtk.HBox(homogeneous=False, spacing=10)
+        vbox.pack_start(hbox0, False, False, 5)
+        label0 = Gtk.Label(label=text0)
+        label1 = Gtk.Label(label=text1)
+        hbox0.pack_start(label0, False, False, 5)
+        hbox0.pack_start(label1, False, False, 5)
+        return vbox
+ 
     def setupScreen2(self):
         """ Setup screen number 2 """
         title = _("Encryption options")
@@ -393,8 +426,17 @@ class TrueCryptWizard(Gtk.Assistant):
     def onDeviceVolume(self, widget):
         """ Handle switching of radio buttons for file/device volumes """
         self.useDevice = self.rad1.get_active()
+        self.useBootDevice = self.rad2.get_active()
         self.fsLabel = ""
-        self.volume = ""
+        if self.useBootDevice:
+            if os.path.exists(self.getBootDevice() + "3"):
+                self.displayMessage(Gtk.MessageType.WARNING,
+                                    _("There already is a data partition on the "
+                                      "boot device. If you continue, all data on "
+                                      "it will be deleted!"))
+            self.volume = self.getBootDevice() + "3"
+        else:
+            self.volume = ""
         self.size.set_value(0)
         self.updateScreens()
 
@@ -511,6 +553,8 @@ class TrueCryptWizard(Gtk.Assistant):
             self.partitionDevice()
             if self.useBackup:
                 self.writeBackupSignature()
+        elif self.useBootDevice:
+            self.partitionBootDevice()
         self.pbar.set_text(_("Generating volume..."))
         self.pbar.set_fraction(0.01)
         self.stop.set_sensitive(True)
@@ -532,7 +576,7 @@ class TrueCryptWizard(Gtk.Assistant):
     def onStop(self, widget):
         """ Stop creation of volume """
         msg = _("Do you really want to stop volume creation?\n")
-        if self.useDevice:
+        if (self.useDevice or self.useBootDevice):
             msg += _("The data medium becomes unusable thereby.")
         else:
             msg += _("The container will be removed in doing that.")
@@ -554,7 +598,7 @@ class TrueCryptWizard(Gtk.Assistant):
                     self.displayMessage(Gtk.MessageType.INFO, msg, self.createTitle)
             except:
                 pass
-            if not self.useDevice and os.path.exists(self.volume):
+            if not (self.useDevice or self.useBootDevice) and os.path.exists(self.volume):
                 os.remove(self.volume)
             self.destroy()
             
@@ -573,7 +617,7 @@ class TrueCryptWizard(Gtk.Assistant):
             return False
         try:
             line = fd.readline()
-            frac = float(line[64:66])/100.0
+            frac = float(line[64:67])/100.0
         except ValueError:
             frac = 0.0
         if frac < 0.02:
@@ -581,7 +625,6 @@ class TrueCryptWizard(Gtk.Assistant):
         elif frac >= 1.0:
             timer = GObject.timeout_add(50, self.luksTimeoutCallback)
         else:
-            print frac
             self.pbar.set_fraction(frac)
             self.pbar.set_text(line.strip())
         return frac < 1.0
@@ -602,7 +645,7 @@ class TrueCryptWizard(Gtk.Assistant):
         self.stop.set_sensitive(False)
         self.pbar.set_fraction(1.0)
         Gtk.main_iteration()
-        if not self.useDevice:
+        if not (self.useDevice or self.useBootDevice):
             try:
                 os.chown(self.volume, self.uid, self.gid)
                 os.chmod(self.volume, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP |
@@ -650,7 +693,7 @@ class TrueCryptWizard(Gtk.Assistant):
         self.stop.set_sensitive(False)
         self.pbar.set_fraction(1.0)
         Gtk.main_iteration()
-        if not self.useDevice:
+        if not (self.useDevice or self.useBootDevice):
             try:
                 os.chown(self.volume, self.uid, self.gid)
                 os.chmod(self.volume, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP |
@@ -841,9 +884,9 @@ class TrueCryptWizard(Gtk.Assistant):
         """ Check wether the device may be used for a TrueCrypt volume """
         ok = False
         # Special case for DSCTL running from USB drive
-        cdromdev = Popen(["grep", "/lib/live/mount/medium", "/proc/mounts"], stdout=PIPE).communicate()[0]
-        if cdromdev and device.path == cdromdev.split()[0]:
-            return False        
+        bootdev = self.getBootDevice() 
+        if bootdev and device.path == bootdev:
+            return False 
         if not device.readOnly:
             if device.type == parted.DEVICE_SCSI:
                 ok = device.path in usbList # USB storage 
@@ -905,6 +948,58 @@ class TrueCryptWizard(Gtk.Assistant):
             return False
         return True
 
+    def getBootDevice(self):
+        return Popen(["grep", "/lib/live/mount/medium", "/proc/mounts"], stdout=PIPE).communicate()[0].split()[0].rstrip('1234567890')
+
+    def partitionBootDevice(self):
+        """ Create data partition on boot device """
+        bootdev = self.getBootDevice()
+        if os.path.exists(bootdev + "3"):
+            self.volume = bootdev + "3"
+            return
+        try:
+            start_sect = int(Popen(["/sbin/sfdisk", "-s", bootdev + "1"], stdout=PIPE).communicate()[0].split()[0].strip()) * 2 + 1
+            print start_sect
+            start_sect = ceil(start_sect / 1024.0) * 1024 # Round to next MB
+            print start_sect
+            # Sanity check
+            if start_sect < 2048000:
+                self.failed(_("Something went wrong trying to partition the boot device. Cannot continue.\n") + 
+                             _("Calculated start sector of %i was < 2048000, which is highly improbable.") % start_sect)
+            p = Popen(["/sbin/sfdisk", "-u", "S", "-L", "--force", "-N", "3", bootdev], stdin=PIPE)
+            p.stdin.write("%i,+,0x83\n" % start_sect)
+            p.stdin.close()
+            ret = p.wait()
+        except:
+            self.failed(_("Something went wrong trying to partition the boot device. Cannot continue.\n") +
+                        sys.exc_info())
+        if p.returncode > 1:
+            self.failed(_("Something went wrong trying to partition the boot device. Cannot continue.\n") +
+                        _("Partitioning failed with error code %i") % p.returncode)
+        try:
+            ret = call(["/usr/bin/partx", "-a", "3", bootdev])
+        except:
+            self.failed(_("Something went wrong trying to partition the boot device. Cannot continue.\n") +
+                        sys.exc_info())
+        if ret or not os.path.exists(bootdev + "3"):
+            self.failed(_("Something went wrong trying to partition the boot device. Cannot continue.\n") +
+                        _("Could not find the partition which was just created."))
+        self.volume = bootdev + "3"
+        print self.volume
+        sleep(30)
+
+    def checkBootDevice(self):
+        """ Check boot device size etc. """
+        if self.volume:
+            disk = self.getBootDevice()
+            disk_size = int(Popen(["/sbin/sfdisk", "-s", disk], stdout=PIPE).communicate()[0].split()[0].strip()) 
+            free_start = int(Popen(["/sbin/sfdisk", "-s", disk + "1"], stdout=PIPE).communicate()[0].split()[0].strip()) + 1
+            size = disk_size - free_start
+            self.size.set_lower(size/1024)
+            self.size.set_upper(size/1024)
+            self.size.set_value(size/1024)
+            self.set_page_complete(self.screen1, len(self.fsLabel) > 0)
+
     def writeBackupSignature(self):
         """ Write the disk-signature "BKUP" into the MBR of the device """
         fd = os.open(self.device.path, os.O_RDWR | os.O_SYNC)
@@ -914,7 +1009,7 @@ class TrueCryptWizard(Gtk.Assistant):
 
     def createLUKSVolume(self):
         """ Create LUKS Volume """
-        if not self.useDevice:
+        if not (self.useDevice or self.useBootDevice):
             if os.path.exists(self.volume):
                 try:
                     os.remove(self.volume)
@@ -941,9 +1036,10 @@ class TrueCryptWizard(Gtk.Assistant):
             self.openLUKSVolume()
             luks_size = self.get_file_size("/dev/mapper/lukstmp")
             args = ["pv", "-s", str(int(luks_size)), "-S", "-p",\
-                    "-e", "-r", "-e", "-f", "-w", "80", "/dev/zero"]
+                    "-e", "-r", "-f", "-w", "80", "/dev/zero"]
             print args
-            self.tc = Popen(args=args, stdin=PIPE, stdout=open("/dev/mapper/lukstmp", 'w'), stderr=PIPE, close_fds=True, bufsize=1, universal_newlines=True)
+            luksdev = open("/dev/mapper/lukstmp", 'w')
+            self.tc = Popen(args=args, stdin=PIPE, stdout=luksdev, stderr=PIPE, close_fds=True, bufsize=1, universal_newlines=True)
         else:
             self.failed(_("An error occured while trying to create the container!"))
 
@@ -964,7 +1060,7 @@ class TrueCryptWizard(Gtk.Assistant):
         args.append("--hash=" + self.hashAlgorithm)
         args.append("-p")
         args.append(self.password)
-        if not self.useDevice:
+        if not (self.useDevice or self.useBootDevice):
             args.append("--size=%d" % int(self.size.get_value() *1048576))
         args.append(self.volume)
         self.tc = self.callProcess(args)
@@ -1017,6 +1113,7 @@ class TrueCryptWizard(Gtk.Assistant):
 
     def makeExtended(self):
         """ Make the TrueCrypt volume an extended one """
+        print "Making extended"
         if self.mode != "LUKS":
             if not self.openTrueCryptVolume():
                 self.failed(_("Could not open Container"))
@@ -1036,9 +1133,11 @@ class TrueCryptWizard(Gtk.Assistant):
 
     def makeExt3FileSystem(self, device):
         """ Make an ext3 file system on the TrueCrypt volume """
+        print "Making ext3"
         args = ["/sbin/mkfs.ext3", "-m", "0", "-L"]
         args.append(self.fsLabel)
         args.append(device)
+        print args
         mkfs = self.callProcess(args)
         ret = mkfs.poll()
         while ret == None:
@@ -1049,6 +1148,7 @@ class TrueCryptWizard(Gtk.Assistant):
         mkfs.stdin.close()
         mkfs.stdout.close()
         mkfs.stderr.close()
+        print "Mkfs returned %i" % ret 
         return ret == 0
 
     def createExtendedMarker(self, device):

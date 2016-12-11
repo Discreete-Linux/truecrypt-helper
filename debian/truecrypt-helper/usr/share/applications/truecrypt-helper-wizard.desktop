@@ -1,7 +1,7 @@
 [Desktop Entry]
 Exec=/usr/bin/sudo /usr/bin/tc-wizard
 Icon=truecrypt-wizard
-Name=TrueCrypt Volume Wizard
+Name=CryptoBox Wizard
 Terminal=false
 Type=Application
 Version=1.0

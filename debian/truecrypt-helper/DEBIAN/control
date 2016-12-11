@@ -1,9 +1,9 @@
 Package: truecrypt-helper
-Version: 0.8
+Version: 0.12
 Architecture: all
 Maintainer: Discreete Linux Team <info@discreete-linux.org>
-Installed-Size: 604
-Depends: util-linux, python, nemo-python, python-notify, python-daemon, python-parted, secure-delete, dosfstools, ntfs-3g, mtools, xterm, gir1.2-notify-0.7, python-pyudev, lsof, exfat-utils
+Installed-Size: 823
+Depends: util-linux, python, nemo-python, python-daemon, python-parted, secure-delete, dosfstools, ntfs-3g, mtools, xterm, gir1.2-notify-0.7, gir1.2-udisks-2.0, python-pyudev, lsof, exfat-utils
 Recommends: extended-volume-manager
 Suggests: cryptsetup
 Section: utils

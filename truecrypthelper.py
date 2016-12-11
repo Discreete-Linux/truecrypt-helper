@@ -16,7 +16,7 @@ import stat
 import glob
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Notify, GObject, Gio, GLib
+from gi.repository import Gtk, Notify, GObject, Gio, GLib, UDisks
 
 gettext.install("truecrypt-helper", unicode=1)
 Notify.init("truecrypt-helper")
@@ -146,31 +146,39 @@ def _is_truecrypt(device, name):
 
 def drive_connected(drive):
     if not drive.has_media():
-        pass
+        return 
     voltype = None
     device = drive.get_identifier("unix-device")
     partitions = glob.glob("%s?" % device)
     if len(partitions) == 0:
         try:
-            voltype = subprocess.Popen(["/usr/bin/sudo", "/sbin/blkid", "-c",
-                                        "/dev/null", "-s", "TYPE", "-o", "value",
-                                        device],
-                                       stdout=subprocess.PIPE).communicate()[0]
+            block_proxy = UDisks.BlockProxy.new_for_bus_sync(Gio.BusType(1), 0, "org.freedesktop.UDisks2", "/org/freedesktop/UDisks2/block_devices/" + device.rsplit('/', 1)[1], None)
+            voltype = block_proxy.props.id_type
+            #voltype = subprocess.Popen(["/usr/bin/sudo", "/sbin/blkid", "-c",
+            #                            "/dev/null", "-s", "TYPE", "-o", "value",
+            #                            device],
+            #                           stdout=subprocess.PIPE).communicate()[0]
         except:
             pass
         if voltype == "":
             _is_truecrypt(device, drive.get_name())
+        elif voltype == "crypto_LUKS":
+            luks_open_volume(device)
     else:
         for part in partitions:
             try:
-                voltype = subprocess.Popen(["/usr/bin/sudo", "/sbin/blkid", "-c",
-                                            "/dev/null", "-s", "TYPE", "-o", "value",
-                                            part],
-                                           stdout=subprocess.PIPE).communicate()[0]
+                block_proxy = UDisks.BlockProxy.new_for_bus_sync(Gio.BusType(1), 0, "org.freedesktop.UDisks2", "/org/freedesktop/UDisks2/block_devices/" + part.rsplit('/', 1)[1], None)
+                voltype = block_proxy.props.id_type
+                #voltype = subprocess.Popen(["/usr/bin/sudo", "/sbin/blkid", "-c",
+                #                            "/dev/null", "-s", "TYPE", "-o", "value",
+                #                            part],
+                #                           stdout=subprocess.PIPE).communicate()[0]
             except:
                 pass
             if voltype == "":
                 _is_truecrypt(part, drive.get_name())
+            elif voltype == "crypto_LUKS":
+                luks_open_volume(part)
 
 def start_with_pbar(args, title, message):
     """ Start the process, showing a progress bar. """
@@ -228,7 +236,7 @@ def ask_open_container(name, devfile, backup=False):
     hbox = Gtk.HBox()
     hbox.pack_start(img, False, False, 10)
     hbox.pack_start(label1, True, True, 10)
-    question.set_title(_("TrueCrypt/VeraCrypt Device detected"))
+    question.set_title(_("CryptoBox device detected"))
     question.get_content_area().pack_start(hbox, True, True, 10)
     question.set_default_response(Gtk.ResponseType.YES)
     question.set_position(Gtk.WindowPosition.CENTER)
@@ -333,7 +341,7 @@ def tc_open(filename, extramountopts=None, mode="vc"):
         show_error(_("There is already another truecrypt-helper process "
                      "running, please let it finish first."))
         return
-    syslog.syslog(syslog.LOG_DEBUG, "Opening TrueCrypt/VeraCrypt volume %s" %
+    syslog.syslog(syslog.LOG_DEBUG, "Opening CryptoBox volume %s" %
                   filename.encode('ascii', 'replace'))
     mountopts = ["noexec", "nosuid", "nodev"]
     if extramountopts:
@@ -358,8 +366,8 @@ def tc_open(filename, extramountopts=None, mode="vc"):
     except subprocess.CalledProcessError:
         syslog.syslog(syslog.LOG_DEBUG, "User cancelled")
         return
-    pyn.update(_("Opening TrueCrypt/VeraCrypt volume"),
-               _("TrueCrypt/VeraCrypt Volume is being opened, please wait..."),
+    pyn.update(_("Opening CryptoBox volume"),
+               _("CryptoBox Volume is being opened, please wait..."),
                "usbpendrive_unmount")
     pyn.show()
     dmname = tclines[2][16:]
@@ -444,7 +452,7 @@ def tc_open(filename, extramountopts=None, mode="vc"):
             pass
 
     pyn.update(_("Opening successful"),
-               _("TrueCrypt/VeraCrypt volume %s was opened successfully") % filename,
+               _("CryptoBox volume %s was opened successfully") % filename,
                "usbpendrive_unmount")
     pyn.show()
 
@@ -501,8 +509,8 @@ def complete_unmount(device, mountpoint):
         if os.path.basename(os.readlink(link)) == dm_device:
             syslog.syslog(syslog.LOG_DEBUG, "Closing container at %s" %
                   mountpoint.encode('ascii', 'replace'))
-            pyn.update(_("Closing TrueCrypt/VeraCrypt volume"),
-               _("TrueCrypt/VeraCrypt volume is being closed, please wait..."),
+            pyn.update(_("Closing CryptoBox volume"),
+               _("CryptoBox volume is being closed, please wait..."),
                "usbpendrive_unmount")
             try:
                 subprocess.check_call(tct + ["-d", "--slot=%d" %
@@ -530,8 +538,8 @@ def tc_close(mountpoint):
     mountpoint = mountpoint.rstrip('/')
     syslog.syslog(syslog.LOG_DEBUG, "Closing container at %s" %
                   mountpoint.encode('ascii', 'replace'))
-    pyn.update(_("Closing TrueCrypt/VeraCrypt volume"),
-               _("TrueCrypt/VeraCrypt volume is being closed, please wait..."),
+    pyn.update(_("Closing CryptoBox volume"),
+               _("CryptoBox volume is being closed, please wait..."),
                "usbpendrive_unmount")
     pyn.show()
     if not os.path.ismount(mountpoint):
@@ -541,7 +549,7 @@ def tc_close(mountpoint):
     # see if mountpoint is an open tc volume
     if subprocess.call(tct + ["-l", mountpoint],
                        stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT):
-        show_error(_("There is no TrueCrypt/VeraCrypt volume mounted at %s.") % mountpoint)
+        show_error(_("There is no CryptoBox volume mounted at %s.") % mountpoint)
         return
 
     # Get File and device name of mounted container
@@ -727,5 +735,35 @@ def tc_check(filename):
         ret = subprocess.call(args)
     subprocess.call(tct + ["-d", encfile])
 
+def luks_open_container(filename):
+    try:
+        fd = os.open(filename, os.O_RDWR)
+        mgr = UDisks.ManagerProxy.new_for_bus_sync(Gio.BusType(1), 0, "org.freedesktop.UDisks2", "/org/freedesktop/UDisks2/Manager", None)
+        loop_object_path = mgr.call_loop_setup_sync(GLib.Variant('h', 0), GLib.Variant('a{sv}', []), Gio.UnixFDList.new_from_array([fd]), None)[0]
+        loop_proxy = UDisks.LoopProxy.new_for_bus_sync(Gio.BusType(1), 0, "org.freedesktop.UDisks2", loop_object_path, None)
+        block_proxy = UDisks.BlockProxy.new_for_bus_sync(Gio.BusType(1), 0, "org.freedesktop.UDisks2", loop_object_path, None)
+        if block_proxy.props.id_usage != 'crypto':
+            loop_proxy.call_set_autoclear_sync(True, GLib.Variant('a{sv}', []), None)
+            show_error(_("The file %s does not seem to be a LUKS encrypted container file!") % filename)
+    except:
+        show_error(_("Unknown error occured while trying to open the LUKS container %s") % filename)
+        
+def luks_open_volume(device):
+    mo = Gtk.MountOperation()
+    vm = Gio.VolumeMonitor.get()
+    loop = GObject.MainLoop()
+    for d in vm.get_connected_drives():
+        if d.has_volumes():
+            for v in d.get_volumes(): 
+                if v.get_identifier('unix-device') == device:
+                    v.mount(0, mo, None, luks_open_volume_cb, loop)
+                    loop.run()
+                    break
+        
+def luks_open_volume_cb(obj, res, data):
+    obj.mount_finish(res)
+    syslog.syslog(syslog.LOG_DEBUG, "Successfully mounted LUKS volume at %s" % obj.get_mount().get_root().get_path())
+    data.quit()
+    
 if __name__ == "__main__":
     print "This module cannot be called directly"

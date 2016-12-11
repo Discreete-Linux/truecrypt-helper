@@ -1,8 +1,8 @@
 [Desktop Entry]
 Exec=/usr/bin/tc-device-rescan.py
 Icon=truecrypt-wizard
-Name=Scan for TrueCrypt Volumes
-Comment=Scans for already connected but not yet mounted TrueCrypt Volumes
+Name=Scan for CryptoBox Volumes
+Comment=Scans for already connected but not yet mounted CryptoBox Volumes
 Terminal=false
 Type=Application
 Version=1.0

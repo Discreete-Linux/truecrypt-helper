@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=LUKS
+Type=Application
+MimeType=application/x-luks-volume;
+Exec=/usr/bin/luks-open
+NoDisplay=true
+Terminal=false
+X-Ubuntu-Gettext-Domain=truecrypt-helper

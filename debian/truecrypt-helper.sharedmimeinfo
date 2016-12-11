@@ -4,11 +4,21 @@
     <comment>encrypted Truecrypt container file</comment>
     <comment xml:lang="de">verschlüsselter Truecrypt-Container</comment>
     <glob pattern="*.tc"/>
+    <icon name="truecrypt-container"/>
   </mime-type>
   <mime-type type="application/x-veracrypt-volume">
     <comment>encrypted VeraCrypt container file</comment>
     <comment xml:lang="de">verschlüsselter VeraCrypt-Container</comment>
     <glob pattern="*.hc"/>
+    <icon name="veracrypt-container"/>
+  </mime-type>
+  <mime-type type="application/x-luks-volume">
+    <comment>encrypted LUKS container file</comment>
+    <comment xml:lang="de">verschlüsselter LUKS-Container</comment>
+    <glob pattern="*.luks"/>
+    <magic>
+      <match type="string" offset="0" value="LUKS\xba\xbe"/>
+    </magic>
+    <icon name="luks-container"/>
   </mime-type>
 </mime-info>
-

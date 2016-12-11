@@ -1,3 +1,28 @@
+truecrypt-helper (0.12) jessie; urgency=medium
+
+  * Bugfixes and naming conventions.
+
+ -- Discreete Linux Team <info@discreete-linux.org>  Wed, 07 Dec 2016 09:55:19 +0100
+
+truecrypt-helper (0.11) jessie; urgency=medium
+
+  * Add support for using free space on boot media
+
+ -- Discreete Linux Team <info@discreete-linux.org>  Fri, 02 Dec 2016 13:23:25 +0100
+
+truecrypt-helper (0.10) jessie; urgency=medium
+
+  * Add basic LUKS container support
+  * Add icons for container files
+
+ -- Discreete Linux Team <info@discreete-linux.org>  Wed, 30 Nov 2016 13:04:18 +0100
+
+truecrypt-helper (0.9) jessie; urgency=medium
+
+  * Fix mis-detection of removable empty drives
+
+ -- Discreete Linux Team <info@discreete-linux.org>  Tue, 29 Nov 2016 08:18:12 +0100
+
 truecrypt-helper (0.8) jessie; urgency=low
 
   * Split into separate packages: truecrypt-helper and

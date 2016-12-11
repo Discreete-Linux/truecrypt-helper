@@ -6,9 +6,9 @@
 # Standard-Variablen, die angepasst werden müssen
 PYMODS = truecrypthelper.py
 BINFILES =
-USRBINFILES = tc-open tc-close tc-check tc-wizard tc-device-listener.py tc-device-rescan.py wipefreespace vc-open
+USRBINFILES = luks-open tc-open tc-close tc-check tc-wizard tc-device-listener.py tc-device-rescan.py wipefreespace vc-open
 EXTENSIONS = truecrypt-helper.py
-MENUFILES = truecrypt-helper-tc.desktop truecrypt-helper-vc.desktop truecrypt-helper-wizard.desktop tc-device-rescan.desktop
+MENUFILES = truecrypt-helper-luks.desktop truecrypt-helper-tc.desktop truecrypt-helper-vc.desktop truecrypt-helper-wizard.desktop tc-device-rescan.desktop
 EXTRATARGETS = 
 EXTRAINSTALLS = polkit sudo xdgstart
 ###

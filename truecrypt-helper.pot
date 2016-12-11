@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: truecrypt-helper \n"
 "Report-Msgid-Bugs-To: info@discreete-linux.org\n"
-"POT-Creation-Date: 2016-11-02 13:41+0100\n"
+"POT-Creation-Date: 2016-12-07 09:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,233 +17,288 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: tc-open:14 tc-close:14 tc-check:14
+#: luks-open:17
+msgid "Need to specify a regular file or block device!"
+msgstr ""
+
+#: tc-open:14 tc-close:14 tc-check:14 vc-open:14
 msgid "Too many arguments."
 msgstr ""
 
-#: tc-wizard:30
-msgid "VeraCrypt Volume Wizard"
+#: tc-wizard:31
+msgid "CryptoBox Wizard"
 msgstr ""
 
-#: tc-wizard:108
+#: tc-wizard:119
 msgid "Basic Settings"
 msgstr ""
 
-#: tc-wizard:109
+#: tc-wizard:120
 msgid "Create an _extended volume"
 msgstr ""
 
-#: tc-wizard:110
+#: tc-wizard:121
 msgid "Create a volume for automatic _backups"
 msgstr ""
 
-#: tc-wizard:111
+#: tc-wizard:122
 msgid "Create a container _file"
 msgstr ""
 
-#: tc-wizard:112
+#: tc-wizard:123
 msgid "Use an entire _data medium for created volume"
 msgstr ""
 
-#: tc-wizard:145
+#: tc-wizard:124
+msgid "Use free space on _boot medium for created volume"
+msgstr ""
+
+#: tc-wizard:125
+msgid "Encryption format:"
+msgstr ""
+
+#: tc-wizard:179
 msgid "Volume _label:"
 msgstr ""
 
-#: tc-wizard:146
+#: tc-wizard:180
 msgid "Container _size:"
 msgstr ""
 
-#: tc-wizard:147
+#: tc-wizard:181
 msgid "Volume Selection"
 msgstr ""
 
-#: tc-wizard:199
+#: tc-wizard:235
 msgid "_Container file:"
 msgstr ""
 
-#: tc-wizard:200
+#: tc-wizard:236
 msgid "_Browse"
 msgstr ""
 
-#: tc-wizard:224
+#: tc-wizard:260
 msgid "_Data medium:"
 msgstr ""
 
-#: tc-wizard:244
+#: tc-wizard:280
+msgid "Boot medium:"
+msgstr ""
+
+#: tc-wizard:294
 msgid "Encryption options"
 msgstr ""
 
-#: tc-wizard:245
+#: tc-wizard:295
 msgid "_Password:"
 msgstr ""
 
-#: tc-wizard:246
+#: tc-wizard:296
 msgid "_Confirm password:"
 msgstr ""
 
-#: tc-wizard:247
+#: tc-wizard:297
 msgid "_Encryption algorithm:"
 msgstr ""
 
-#: tc-wizard:248
+#: tc-wizard:298
 msgid "_Hash algorithm:"
 msgstr ""
 
-#: tc-wizard:249
+#: tc-wizard:299
 msgid "_Display password"
 msgstr ""
 
-#: tc-wizard:330
+#: tc-wizard:380
 msgid "Volume Creation"
 msgstr ""
 
-#: tc-wizard:331
+#: tc-wizard:381
 msgid ""
 "IMPORTANT: Move the mouse for about a minute as randomly as possible. This "
 "enhances the cryptographic strength of the encryption. When you are done "
 "with that click \"Generate\"."
 msgstr ""
 
-#: tc-wizard:335
+#: tc-wizard:385
 msgid "_Generate"
 msgstr ""
 
-#: tc-wizard:336
+#: tc-wizard:386
 msgid "_Stop"
 msgstr ""
 
-#: tc-wizard:389
-msgid "All data on the data medium will be lost!\n"
-msgstr ""
-
-#: tc-wizard:390
-msgid "Are you sure you want to encrypt this data medium?"
-msgstr ""
-
-#: tc-wizard:413
-msgid "Container Selection"
-msgstr ""
-
-#: tc-wizard:414
-msgid "TrueCrypt files"
-msgstr ""
-
-#: tc-wizard:415
-msgid "All files"
-msgstr ""
-
-#: tc-wizard:447
-msgid "Overwrite existing?"
+#: tc-wizard:434
+msgid ""
+"There already is a data partition on the boot device. If you continue, all "
+"data on it will be deleted!"
 msgstr ""
 
 #: tc-wizard:448
+msgid "All data on the data medium will be lost!\n"
+msgstr ""
+
+#: tc-wizard:449
+msgid "Are you sure you want to encrypt this data medium?"
+msgstr ""
+
+#: tc-wizard:472
+msgid "Container Selection"
+msgstr ""
+
+#: tc-wizard:473
+msgid "Container files"
+msgstr ""
+
+#: tc-wizard:474
+msgid "All files"
+msgstr ""
+
+#: tc-wizard:507
+msgid "Overwrite existing?"
+msgstr ""
+
+#: tc-wizard:508
 msgid ""
 "A backup container already exists at that location. Do you want to overwrite "
 "it?"
 msgstr ""
 
-#: tc-wizard:488
+#: tc-wizard:558
 msgid "Generating volume..."
 msgstr ""
 
-#: tc-wizard:498
+#: tc-wizard:578
 msgid "Do you really want to stop volume creation?\n"
 msgstr ""
 
-#: tc-wizard:500
+#: tc-wizard:580
 msgid "The data medium becomes unusable thereby."
 msgstr ""
 
-#: tc-wizard:502
+#: tc-wizard:582
 msgid "The container will be removed in doing that."
 msgstr ""
 
-#: tc-wizard:515
+#: tc-wizard:596
 msgid "The process has just terminated.\n"
 msgstr ""
 
-#: tc-wizard:516
+#: tc-wizard:597
 msgid "So we will continue."
 msgstr ""
 
-#: tc-wizard:602
+#: tc-wizard:744
 #, python-format
 msgid "%s MB max."
 msgstr ""
 
-#: tc-wizard:662
+#: tc-wizard:804
 msgid "Password check"
 msgstr ""
 
-#: tc-wizard:663
+#: tc-wizard:805
 #, python-format
 msgid "The password must be at least %d characters long!"
 msgstr ""
 
-#: tc-wizard:664
+#: tc-wizard:806
 msgid "The password must contain at least one non-letter character!"
 msgstr ""
 
-#: tc-wizard:665
+#: tc-wizard:807
 msgid "The password contains unallowed characters. Allowed characters are:"
 msgstr ""
 
-#: tc-wizard:751
+#: tc-wizard:911
 msgid ""
 "Could not unmount device. Maybe there is an open TrueCrypt volume on it?"
 msgstr ""
 
-#: tc-wizard:768
+#: tc-wizard:928
 #, python-format
 msgid ""
 "Could not partition device. The error returned was:\n"
 "%s"
 msgstr ""
 
-#: tc-wizard:853 tc-wizard:917
+#: tc-wizard:967 tc-wizard:974 tc-wizard:977 tc-wizard:982 tc-wizard:985
+msgid ""
+"Something went wrong trying to partition the boot device. Cannot continue.\n"
+msgstr ""
+
+#: tc-wizard:968
+#, python-format
+msgid ""
+"Calculated start sector of %i was < 2048000, which is highly improbable."
+msgstr ""
+
+#: tc-wizard:978
+#, python-format
+msgid "Partitioning failed with error code %i"
+msgstr ""
+
+#: tc-wizard:986
+msgid "Could not find the partition which was just created."
+msgstr ""
+
+#: tc-wizard:1017
+#, python-format
+msgid "Could not remove already existing file %s, cannot continue!"
+msgstr ""
+
+#: tc-wizard:1026
+msgid "An error occured while trying to allocate the container file"
+msgstr ""
+
+#: tc-wizard:1044
+msgid "An error occured while trying to create the container!"
+msgstr ""
+
+#: tc-wizard:1119 tc-wizard:1187
 msgid "Could not open Container"
 msgstr ""
 
-#: tc-wizard:857 tc-wizard:921
+#: tc-wizard:1123 tc-wizard:1191
 msgid "Could not find device for Container"
 msgstr ""
 
-#: tc-wizard:860
+#: tc-wizard:1128
 msgid "Could not create filesystem on Container"
 msgstr ""
 
-#: tc-wizard:905
+#: tc-wizard:1174
 #, python-format
 msgid ""
 "Could not unmount device. The error returned was:\n"
 "%i"
 msgstr ""
 
-#: tc-wizard:911
+#: tc-wizard:1180
 #, python-format
 msgid ""
 "Could not remove temp dir. The error returned was:\n"
 "%s"
 msgstr ""
 
-#: tc-wizard:942
-msgid "The TrueCrypt volume has been successfully created.\n"
+#: tc-wizard:1214
+msgid "The encrypted volume has been successfully created.\n"
 msgstr ""
 
-#: tc-wizard:943
+#: tc-wizard:1215
 msgid "It may be used now."
 msgstr ""
 
-#: tc-wizard:950
-msgid "Error: Creating TrueCrypt volume failed."
+#: tc-wizard:1221
+msgid "Error: Creating encrypted volume failed."
 msgstr ""
 
-#: tc-wizard:952
+#: tc-wizard:1223
 #, python-format
 msgid "Error information: %s"
 msgstr ""
 
-#: tc-wizard:1001
+#: tc-wizard:1268
 msgid ""
 "There is already another truecrypt-helper process running, please let it "
 "finish first."
@@ -316,55 +371,55 @@ msgid ""
 "<i>%s</i>"
 msgstr ""
 
-#: truecrypt-helper.py:94
+#: truecrypt-helper.py:76
 msgid "An error occured!"
 msgstr ""
 
-#: truecrypt-helper.py:141
-msgid "TrueCrypt-Container"
+#: truecrypt-helper.py:122
+msgid "VeraCrypt-Container"
 msgstr ""
 
-#: truecrypt-helper.py:142
-msgid "Treat this file as a truecrypt container"
+#: truecrypt-helper.py:123
+msgid "Treat this file as a veracrypt container"
 msgstr ""
 
-#: truecrypt-helper.py:147
+#: truecrypt-helper.py:128
 msgid "Open"
 msgstr ""
 
-#: truecrypt-helper.py:148
-msgid "Tries to open the file as a TrueCrypt container"
+#: truecrypt-helper.py:129
+msgid "Tries to open the file as a VeraCrypt container"
 msgstr ""
 
-#: truecrypt-helper.py:151
+#: truecrypt-helper.py:132
 msgid "Check"
 msgstr ""
 
-#: truecrypt-helper.py:152
+#: truecrypt-helper.py:133
 msgid "Checks the container filesystem"
 msgstr ""
 
-#: truecrypt-helper.py:158
+#: truecrypt-helper.py:139
 msgid "Unmount"
 msgstr ""
 
-#: truecrypt-helper.py:159
-msgid "Unmounts the selected TrueCrypt Container"
+#: truecrypt-helper.py:140
+msgid "Unmounts the selected TrueCrypt/VeraCrypt Container"
 msgstr ""
 
-#: truecrypt-helper.py:162
+#: truecrypt-helper.py:143
 msgid "Force-Unmount"
 msgstr ""
 
-#: truecrypt-helper.py:163
-msgid "Forcibly Unmounts the selected TrueCrypt Container"
+#: truecrypt-helper.py:144
+msgid "Forcibly Unmounts the selected TrueCrypt/VeraCrypt Container"
 msgstr ""
 
-#: truecrypt-helper.py:169 truecrypt-helper.py:181
+#: truecrypt-helper.py:150 truecrypt-helper.py:162
 msgid "Wipe free space"
 msgstr ""
 
-#: truecrypt-helper.py:170 truecrypt-helper.py:182
+#: truecrypt-helper.py:151 truecrypt-helper.py:163
 msgid "Overwrites free space on the current location"
 msgstr ""
 
@@ -384,15 +439,3 @@ msgid ""
 "WARNING: This enables repair actions which may further corrupt the "
 "filesystem if something goes wrong."
 msgstr ""
-msgid "TrueCrypt helper device listener"
-msgstr ""
-
-msgid "Listens for USB devices which could be TrueCrypt encrypted devices"
-msgstr ""
-
-msgid "Scan for TrueCrypt Volumes"
-msgstr ""
-
-msgid "Scans for already connected but not yet mounted TrueCrypt Volumes"
-msgstr ""
-

@@ -1,6 +1,18 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: truecrypt-helper
-Source: <url://example.com>
+Source: https://www.discreete-linux.org
+
+Files: icons/*/mimetypes/truecrypt-container.png
+Copyright: versianova@deviantart
+License: CC-BY-NC-SA 3.0
+
+Files: icons/*/apps/truecrypt.png
+Copyright: flakshack@deviantart
+License: CC-BY 3.0
+
+Files: icons/*/apps/truecrypt-wizard.png
+Copyright: flakshack@deviantart, Discreete Linux Team <info@discreete-linux.org>
+License: CC-BY 3.0
 
 Files: *
 Copyright: Discreete Linux Team <info@discreete-linux.org>

@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=truecrypt
+Name=VeraCrypt
 Type=Application
 MimeType=application/x-veracrypt-volume;
 Exec=/usr/bin/vc-open
